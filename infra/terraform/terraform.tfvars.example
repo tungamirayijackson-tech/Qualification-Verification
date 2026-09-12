@@ -1,0 +1,23 @@
+# Copy to terraform.tfvars and fill in, or pass with -var-file.
+#
+# terraform.tfvars is gitignored. These are the same secrets the application refuses to start
+# without, and there is deliberately no default for any of them anywhere in this repository.
+#
+# Generate a fresh set:
+#   field_key         openssl rand -base64 32     (must decode to exactly 32 bytes)
+#   national_id_salt  openssl rand -hex 24
+#   ip_salt           openssl rand -hex 24
+#   jwt_secret        openssl rand -hex 32
+#   database_password openssl rand -base64 24
+#   grafana_password  openssl rand -base64 18
+
+field_key         = ""
+national_id_salt  = ""
+ip_salt           = ""
+jwt_secret        = ""
+database_password = ""
+grafana_password  = ""
+
+# `dev` seeds demo institutions, qualifications, credentials and one account per role, all
+# with a password written in this repository. Never point it at anything real.
+# profile = "dev"

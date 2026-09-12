@@ -1,0 +1,163 @@
+<a class="skip-link" href="#main">Skip to content</a>
+
+<div class="shell" [class.shell-console]="shell() === 'console'">
+  @if (shell() === 'public') {
+    <header class="masthead">
+      <div class="masthead-inner">
+        <a class="brand" routerLink="/verify" (click)="closeMenu()">
+          <span class="brand-emblem" aria-hidden="true">
+            <app-icon name="shieldCheck" [size]="20" />
+          </span>
+          <span class="brand-words">
+            <span class="brand-mark">QVS</span>
+            <span class="brand-name">Qualification Verification</span>
+          </span>
+        </a>
+
+        <nav class="header-nav" aria-label="Main">
+          <ul>
+            @for (item of headerLinks(); track item.path) {
+              <li>
+                <a
+                  [routerLink]="item.path"
+                  routerLinkActive="current"
+                  [routerLinkActiveOptions]="{ exact: item.exact ?? false }"
+                >
+                  <app-icon [name]="item.icon" [size]="16" />
+                  <span>{{ item.label }}</span>
+                </a>
+              </li>
+            }
+          </ul>
+        </nav>
+
+        <div class="session">
+          @if (session.user(); as user) {
+            <span class="who">
+              <span class="who-avatar" aria-hidden="true">
+                <app-icon name="user" [size]="16" />
+              </span>
+              <span class="who-text">
+                <span class="who-email">{{ user.email }}</span>
+                <span class="pill neutral">{{ user.role }}</span>
+              </span>
+            </span>
+            <button class="quiet" type="button" (click)="signOut()">
+              <app-icon name="signOut" [size]="16" />
+              <span>Sign out</span>
+            </button>
+          } @else {
+            <a class="button-link primary" routerLink="/sign-in" (click)="closeMenu()">
+              <app-icon name="signIn" [size]="16" />
+              <span>Sign in</span>
+            </a>
+          }
+        </div>
+      </div>
+    </header>
+  }
+
+  <div class="body">
+    @if (shell() === 'console') {
+      <!--
+        On a narrow screen the sidebar collapses, so the brand and the menu control need a
+        home of their own. Hidden on a wide one, where the sidebar carries both.
+      -->
+      <div class="console-topbar">
+        <a class="brand" routerLink="/credentials" (click)="closeMenu()">
+          <span class="brand-emblem" aria-hidden="true">
+            <app-icon name="shieldCheck" [size]="18" />
+          </span>
+          <span class="brand-mark">QVS</span>
+        </a>
+        <button
+          class="quiet menu-toggle"
+          type="button"
+          (click)="toggleMenu()"
+          [attr.aria-expanded]="menuOpen()"
+          aria-controls="console-nav"
+        >
+          <app-icon [name]="menuOpen() ? 'close' : 'menu'" [size]="20" />
+          <span class="visually-hidden">{{ menuOpen() ? 'Hide' : 'Show' }} navigation</span>
+        </button>
+      </div>
+
+      <nav id="console-nav" class="sidebar" [class.open]="menuOpen()" aria-label="Console sections">
+        <a class="brand brand-in-shell" routerLink="/credentials" (click)="closeMenu()">
+          <span class="brand-emblem" aria-hidden="true">
+            <app-icon name="shieldCheck" [size]="20" />
+          </span>
+          <span class="brand-words">
+            <span class="brand-mark">QVS</span>
+            <span class="brand-name">Qualification Verification</span>
+          </span>
+        </a>
+
+        <div class="nav-scroll">
+          @for (group of groups(); track group.heading) {
+            <div class="nav-group">
+              <h2 class="nav-heading">{{ group.heading }}</h2>
+              <ul>
+                @for (item of group.items; track item.path) {
+                  <li>
+                    <a
+                      [routerLink]="item.path"
+                      routerLinkActive="current"
+                      [routerLinkActiveOptions]="{ exact: item.exact ?? false }"
+                      (click)="closeMenu()"
+                    >
+                      <span class="nav-icon" aria-hidden="true">
+                        <app-icon [name]="item.icon" [size]="18" />
+                      </span>
+                      <span class="nav-text">
+                        <span class="nav-label">{{ item.label }}</span>
+                        <span class="nav-hint">{{ item.hint }}</span>
+                      </span>
+                    </a>
+                  </li>
+                }
+              </ul>
+            </div>
+          }
+        </div>
+
+        <!-- Pinned to the foot of the sidebar, as in the design: who you are signed in as is
+             a persistent fact about the session, not a piece of navigation. -->
+        <div class="sidebar-user">
+          @if (session.user(); as user) {
+            <span class="who-avatar" aria-hidden="true">
+              <app-icon name="user" [size]="18" />
+            </span>
+            <span class="sidebar-user-text">
+              <span class="sidebar-user-email">{{ user.email }}</span>
+              <span class="sidebar-user-role">{{ user.role }}</span>
+            </span>
+            <button class="quiet sidebar-signout" type="button" (click)="signOut()">
+              <app-icon name="signOut" [size]="16" />
+              <span class="visually-hidden">Sign out</span>
+            </button>
+          } @else {
+            <a class="button-link" routerLink="/sign-in" (click)="closeMenu()">
+              <app-icon name="signIn" [size]="16" />
+              <span>Sign in</span>
+            </a>
+          }
+        </div>
+      </nav>
+    }
+
+    <main id="main">
+      <router-outlet />
+    </main>
+  </div>
+
+  @if (shell() === 'public') {
+    <footer class="colophon">
+      <p>
+        <app-icon name="shield" [size]="16" />
+        This system does not decide whether a qualification is real. It reports that a named
+        institution signed a statement, and whether that statement has since been withdrawn.
+      </p>
+    </footer>
+  }
+</div>

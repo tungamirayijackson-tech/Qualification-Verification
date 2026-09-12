@@ -1,0 +1,104 @@
+<div class="page">
+  <div class="page-heading">
+    <app-icon name="ledger" [size]="26" />
+    <h1 class="page-title">Audit ledger</h1>
+  </div>
+  <p class="page-lede">
+    Every state change and every verification, hash-chained. Altering one entry invalidates every
+    hash after it, so tampering cannot be hidden — only located.
+  </p>
+
+  @if (error(); as message) {
+    <p class="notice error" role="alert">{{ message }}</p>
+  }
+
+  @if (chain(); as result) {
+    <div
+      class="notice"
+      [class.success]="result.intact"
+      [class.error]="!result.intact"
+      role="status"
+    >
+      <p>{{ result.detail }}</p>
+      @if (!result.intact) {
+        <p class="field-hint">
+          Entries before sequence {{ result.brokenAtSeq }} still recompute correctly. From that row
+          onward the history cannot be relied on.
+        </p>
+      }
+    </div>
+  }
+
+  <section class="card">
+    <form class="filter" (ngSubmit)="load()">
+      <label class="field">
+        <span class="field-label">Credential serial <span class="muted">(optional)</span></span>
+        <input
+          name="subject"
+          placeholder="ZW-PR0142-2026-000001"
+          [(ngModel)]="subject"
+          [disabled]="busy()"
+        />
+        <span class="field-hint">Leave blank for the most recent entries across the register.</span>
+      </label>
+
+      <div class="actions">
+        <button type="submit" [disabled]="busy()">Search</button>
+        <button class="primary" type="button" (click)="verifyChain()" [disabled]="busy()">
+          {{ busy() ? 'Working' : 'Verify chain' }}
+        </button>
+        <button type="button" (click)="exportCsv()" [disabled]="busy()">Export CSV</button>
+      </div>
+      <p class="field-hint">
+        Verifying the chain and exporting a trail are both recorded in the ledger, attributed to
+        you.
+      </p>
+    </form>
+  </section>
+
+  @if (state() === 'loading') {
+    <p class="muted" role="status">Loading entries…</p>
+  } @else if (state() === 'ready') {
+    @if (entries().length === 0) {
+      <p class="muted">No entries match that search.</p>
+    } @else {
+      <div class="table-scroll">
+        <table>
+          <caption class="visually-hidden">
+            Audit ledger entries, newest first
+          </caption>
+          <thead>
+            <tr>
+              <th scope="col">Seq</th>
+              <th scope="col">When</th>
+              <th scope="col">Actor</th>
+              <th scope="col">Action</th>
+              <th scope="col">Subject</th>
+              <th scope="col">Entry hash</th>
+              <th scope="col">Intact</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (entry of entries(); track entry.seq) {
+              <tr>
+                <td class="mono">{{ entry.seq }}</td>
+                <td>{{ entry.occurredAt | date: 'short' }}</td>
+                <td>{{ entry.actorRole }}</td>
+                <td class="mono">{{ entry.action }}</td>
+                <td class="mono">{{ entry.subjectRef }}</td>
+                <td class="mono hash">{{ entry.entryHash.slice(0, 12) }}…</td>
+                <td>
+                  @if (entry.intact) {
+                    <span class="pill ok">Yes</span>
+                  } @else {
+                    <span class="pill bad">Altered</span>
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  }
+</div>

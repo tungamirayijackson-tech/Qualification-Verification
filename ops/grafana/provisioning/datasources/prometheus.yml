@@ -1,0 +1,16 @@
+# Provisioned, not clicked. A dashboard somebody configured by hand in a running Grafana lives
+# only in that Grafana's database, and is gone the moment the container is recreated.
+apiVersion: 1
+
+datasources:
+  - name: Prometheus
+    # Fixed, so the dashboard JSON can refer to it by name rather than by a
+    # generated id that changes every time the container is recreated.
+    uid: qvs-prometheus
+    type: prometheus
+    access: proxy
+    url: http://prometheus:9090
+    isDefault: true
+    editable: false
+    jsonData:
+      timeInterval: 10s

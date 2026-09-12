@@ -1,0 +1,130 @@
+/* This screen used to carry its own copies of the page padding, the table styles and the
+   status pill, from before those existed in the shared idiom. They have been removed rather
+   than restyled: three definitions of a table is how two of them end up looking wrong. What is
+   left here is only what belongs to this screen. */
+
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.sub {
+  margin: 0.35rem 0 0;
+  color: var(--ink-3);
+}
+
+.help {
+  margin: 0.75rem 0 1.5rem;
+  font-size: 0.875rem;
+  color: var(--ink-3);
+}
+
+/* A filter, not a form field, so it does not get the boxed treatment. */
+.toggle {
+  display: inline-flex;
+  gap: 0.5rem;
+  align-items: center;
+  padding: 0.5rem 0.9rem;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  font-size: 0.9rem;
+  cursor: pointer;
+
+  &:hover {
+    border-color: var(--rule-strong);
+  }
+}
+
+.state {
+  padding: 2rem 0;
+  color: var(--ink-3);
+}
+
+.state.error {
+  color: var(--bad);
+
+  button {
+    margin-top: 0.75rem;
+  }
+}
+
+/* An institution past its accreditation date is still in the register and still shown -- the
+   qualifications it conferred while accredited remain valid -- but it is dimmed, because it
+   cannot issue anything today. */
+tr.lapsed td {
+  color: var(--ink-3);
+}
+
+td .pill {
+  margin-left: 0.4rem;
+}
+
+.table-caption {
+  margin: 0.75rem 0 0;
+  font-size: 0.85rem;
+}
+
+/* -------------------------------------------------------- administrative acts */
+
+.admit-lede {
+  margin: -0.5rem 0 1.25rem;
+  max-width: 70ch;
+  font-size: 0.9rem;
+}
+
+.admit-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  gap: 0 1.25rem;
+}
+
+/* The key control sits at the right-hand end of its row and does not stretch the column. */
+.row-actions {
+  width: 1%;
+  white-space: nowrap;
+
+  button {
+    padding: 0.35rem 0.7rem;
+    font-size: 0.82rem;
+  }
+}
+
+/* ------------------------------------------------------------------ the filter */
+
+.filter-field {
+  max-width: 30rem;
+  margin-bottom: 1.5rem;
+}
+
+/* The icon sits inside the box rather than beside it, so the control reads as one thing. */
+.filter-box {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  padding-left: 0.75rem;
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--ink-3);
+
+  &:focus-within {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent);
+  }
+
+  input {
+    flex: 1 1 auto;
+    border: 0;
+    background: none;
+    padding-left: 0;
+
+    &:focus {
+      outline: none;
+      box-shadow: none;
+    }
+  }
+}

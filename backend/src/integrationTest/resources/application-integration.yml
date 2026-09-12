@@ -1,0 +1,49 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+  data:
+    redis:
+      # Nothing in the integration suite uses Redis yet, but the health indicator will try to
+      # reach it. Pointed at a port nothing listens on so the failure is instant and obvious
+      # rather than a connection timeout lengthening every run.
+      host: 127.0.0.1
+      port: 63799
+      timeout: 200ms
+
+# Test-only secrets.
+#
+# Fixed rather than generated, so a failure is reproducible: a test that encrypts with a random
+# key each run cannot be re-run against a stored ciphertext to work out what went wrong.
+#
+# These are safe to commit precisely because they are worthless — they protect nothing, and the
+# profile that reads them exists only inside the test source set. The production values come
+# from the environment and have no defaults anywhere, so there is nothing here that could leak
+# into a real deployment by being forgotten.
+qvs:
+  vault:
+    # Overridden per-run by the base test class, so parallel or repeated runs never contend
+    # over the same key files.
+    directory: ${java.io.tmpdir}/qvs-integration-vault
+  crypto:
+    # 32 zero bytes, base64.
+    field-key: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=
+    national-id-salt: integration-test-national-id-salt
+    ip-salt: integration-test-ip-salt
+    jwt-secret: integration-test-jwt-secret-at-least-32-bytes-long
+  token:
+    default-ttl-days: 30
+    max-ttl-days: 180
+  rate-limit:
+    # The same numbers as production. Lowering them for the tests would make the suite pass
+    # against a limit nobody ships.
+    verify-per-minute: 60
+    report-per-minute: 10
+
+logging:
+  level:
+    org.flywaydb: INFO

@@ -1,0 +1,250 @@
+<div class="page">
+  <header class="head">
+    <div>
+      <div class="page-heading">
+        <app-icon name="user" [size]="26" />
+        <h1 class="page-title">Accounts</h1>
+      </div>
+      <p class="sub">
+        Every power in this system is handed out here. Creating an account is recorded in the audit
+        ledger, against the administrator who did it.
+      </p>
+    </div>
+    <button class="primary" type="button" (click)="toggleAdding()">
+      <app-icon [name]="adding() ? 'close' : 'user'" [size]="16" />
+      <span>{{ adding() ? 'Cancel' : 'Create an account' }}</span>
+    </button>
+  </header>
+
+  @if (error(); as message) {
+    <p class="notice error" role="alert">{{ message }}</p>
+  }
+
+  @if (justCreated(); as created) {
+    <section class="card password-card" role="status">
+      <h2 class="card-title">
+        <app-icon name="key" [size]="18" />
+        <span>{{ created.account.email }} can now sign in</span>
+      </h2>
+      <p class="muted">
+        This is the only time this password is shown. It is stored as a hash, so the system cannot
+        show it again — pass it on now. They will be asked to set up a second factor on first
+        sign-in if their role requires one.
+      </p>
+      <p class="the-password mono">{{ created.initialPassword }}</p>
+      <div class="actions">
+        <button class="primary" type="button" (click)="copyPassword()">
+          <app-icon name="copy" [size]="16" />
+          <span>{{ copied() ? 'Copied' : 'Copy password' }}</span>
+        </button>
+        <button type="button" (click)="dismissPassword()">I have passed it on</button>
+      </div>
+    </section>
+  }
+
+  @if (pending(); as ask) {
+    <section class="card confirm-card" role="alertdialog" aria-labelledby="confirm-title">
+      <h2 class="card-title" id="confirm-title">
+        <app-icon name="alert" [size]="18" />
+        <span>{{ pendingTitle(ask) }}</span>
+      </h2>
+      <p class="who">
+        {{ ask.user.displayName }} · <span class="mono">{{ ask.user.email }}</span> ·
+        {{ ask.user.role }}
+      </p>
+      <p class="muted">{{ pendingDescription(ask) }}</p>
+      <div class="actions">
+        <button
+          [class.primary]="ask.action === 'restore'"
+          [class.danger]="ask.action !== 'restore'"
+          type="button"
+          [disabled]="busy()"
+          (click)="confirm()"
+        >
+          {{ busy() ? 'Working' : pendingTitle(ask).replace('?', '') }}
+        </button>
+        <button type="button" [disabled]="busy()" (click)="cancelPending()">
+          Leave it as it is
+        </button>
+      </div>
+    </section>
+  }
+
+  @if (adding()) {
+    <form class="card" (ngSubmit)="create()">
+      <h2 class="card-title">Create an account</h2>
+      <p class="muted admit-lede">
+        The initial password is generated and shown once. There is no field for it: an administrator
+        choosing one picks a memorable one, and a memorable password sent in an email is the weakest
+        link in an otherwise careful chain.
+      </p>
+
+      <div class="admit-grid">
+        <label class="field">
+          <span class="field-label">Email address</span>
+          <input name="email" type="email" required [(ngModel)]="email" [disabled]="busy()" />
+          <span class="field-hint">What they sign in with. One account per address.</span>
+        </label>
+
+        <label class="field">
+          <span class="field-label">Display name</span>
+          <input name="displayName" required [(ngModel)]="displayName" [disabled]="busy()" />
+        </label>
+
+        <label class="field">
+          <span class="field-label">Role</span>
+          <select name="role" [(ngModel)]="role" [disabled]="busy()">
+            @for (option of roles; track option) {
+              <option [value]="option">{{ option }}</option>
+            }
+          </select>
+          <span class="field-hint">
+            @switch (role) {
+              @case ('REGISTRAR') {
+                Records and revokes for one institution. Needs a second factor.
+              }
+              @case ('AUDITOR') {
+                Reads the ledger across every institution. Writes nothing, ever.
+              }
+              @case ('ADMIN') {
+                Admits institutions, rotates keys, creates accounts. Needs a second factor.
+              }
+              @case ('VERIFIER') {
+                Holds an account but needs none — checking a credential is public.
+              }
+            }
+          </span>
+        </label>
+
+        @if (needsInstitution()) {
+          <label class="field">
+            <span class="field-label">Institution</span>
+            <select name="institutionId" [(ngModel)]="institutionId" [disabled]="busy()">
+              <option value="">Choose one</option>
+              @for (institution of institutions(); track institution.id) {
+                <option [value]="institution.id">{{ institution.name }}</option>
+              }
+            </select>
+            <span class="field-hint">
+              A registrar acts for exactly one, and can never act for another.
+            </span>
+          </label>
+        }
+      </div>
+
+      <div class="actions">
+        <button class="primary" type="submit" [disabled]="!canSubmit()">
+          {{ busy() ? 'Creating' : 'Create account' }}
+        </button>
+        <button type="button" (click)="toggleAdding()" [disabled]="busy()">Cancel</button>
+      </div>
+    </form>
+  }
+
+  <label class="field filter-field">
+    <span class="visually-hidden">Filter accounts</span>
+    <span class="filter-box">
+      <app-icon name="search" [size]="16" />
+      <input
+        type="search"
+        name="filter"
+        autocomplete="off"
+        placeholder="Filter by email, name or role"
+        [value]="filterTerm()"
+        (input)="onFilter($any($event.target).value)"
+      />
+    </span>
+  </label>
+
+  @switch (state()) {
+    @case ('loading') {
+      <p class="state" role="status">Loading accounts…</p>
+    }
+    @case ('failed') {
+      <div class="state error" role="alert">
+        <p>Could not load the accounts.</p>
+        <button type="button" (click)="load()">Try again</button>
+      </div>
+    }
+    @case ('ready') {
+      @if (rows().length === 0) {
+        <p class="state" role="status" aria-live="polite">
+          @if (isFiltered() && totalLoaded() > 0) {
+            Nothing matches "{{ filterTerm() }}".
+          } @else {
+            No accounts yet.
+          }
+        </p>
+      } @else {
+        <div class="table-scroll">
+          <table>
+            <caption class="visually-hidden">
+              {{
+                rows().length
+              }}
+              account{{
+                rows().length === 1 ? '' : 's'
+              }}
+            </caption>
+            <thead>
+              <tr>
+                <th scope="col">Email</th>
+                <th scope="col">Name</th>
+                <th scope="col">Role</th>
+                <th scope="col">Institution</th>
+                <th scope="col">Second factor</th>
+                <th scope="col">Status</th>
+                <th scope="col"><span class="visually-hidden">Actions</span></th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (user of rows(); track user.id) {
+                <tr [class.lapsed]="user.disabled">
+                  <td>{{ user.email }}</td>
+                  <td>{{ user.displayName }}</td>
+                  <td>
+                    <span class="pill neutral">{{ user.role }}</span>
+                  </td>
+                  <td>{{ institutionName(user.institutionId) }}</td>
+                  <td>
+                    @if (user.mfaEnrolled) {
+                      <span class="pill ok">Enrolled</span>
+                    } @else {
+                      <span class="pill warn">On first sign-in</span>
+                    }
+                  </td>
+                  <td>
+                    @if (user.disabled) {
+                      <span class="pill bad">Suspended</span>
+                    } @else {
+                      <span class="pill ok">Active</span>
+                    }
+                  </td>
+                  <td class="row-actions">
+                    @if (user.disabled) {
+                      <button type="button" (click)="ask('restore', user)">Restore</button>
+                    } @else {
+                      <button type="button" (click)="ask('disable', user)">Suspend</button>
+                    }
+                    <button type="button" (click)="ask('reset-password', user)">
+                      Reset password
+                    </button>
+                    @if (user.mfaEnrolled) {
+                      <button type="button" (click)="ask('reset-mfa', user)">Reset 2FA</button>
+                    }
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+        <p class="muted table-caption" aria-live="polite">
+          {{ rows().length }} account{{ rows().length === 1 ? '' : 's' }}
+          @if (isFiltered()) {
+            of {{ totalLoaded() }}
+          }
+        </p>
+      }
+    }
+  }
+</div>

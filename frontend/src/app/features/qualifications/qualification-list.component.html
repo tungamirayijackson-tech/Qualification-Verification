@@ -1,0 +1,207 @@
+<div class="page">
+  <header class="head">
+    <div>
+      <div class="page-heading">
+        <app-icon name="award" [size]="26" />
+        <h1 class="page-title">Qualifications</h1>
+      </div>
+      <p class="sub">
+        What each awarding body offers. Registering an award needs the identity of one of these.
+      </p>
+    </div>
+    @if (canAdd) {
+      <button class="primary" type="button" (click)="toggleAdding()">
+        <app-icon [name]="adding() ? 'close' : 'award'" [size]="16" />
+        <span>{{ adding() ? 'Cancel' : 'Add a qualification' }}</span>
+      </button>
+    }
+  </header>
+
+  @if (mustChooseInstitution) {
+    <label class="field institution-picker">
+      <span class="field-label">Institution</span>
+      <select name="institution" [(ngModel)]="selectedInstitution" (change)="load()">
+        @for (institution of institutions(); track institution.id) {
+          <option [value]="institution.id">{{ institution.name }}</option>
+        }
+      </select>
+      <span class="field-hint">
+        Your account is not bound to one institution, so the awarding body has to be named.
+      </span>
+    </label>
+  } @else {
+    <p class="help">
+      These are your own institution's. The register takes the institution from your account, so you
+      cannot see or change another's.
+    </p>
+  }
+
+  <label class="field filter-field">
+    <span class="visually-hidden">Filter qualifications</span>
+    <span class="filter-box">
+      <app-icon name="search" [size]="16" />
+      <input
+        type="search"
+        name="filter"
+        autocomplete="off"
+        placeholder="Filter by title, NQF level or SAQA id"
+        [value]="filterTerm()"
+        (input)="onFilter($any($event.target).value)"
+      />
+    </span>
+    <span class="field-hint">
+      Narrows the list as you type. Capitalisation and accents are ignored.
+    </span>
+  </label>
+
+  @if (error(); as message) {
+    <p class="notice error" role="alert">{{ message }}</p>
+  }
+  @if (note(); as message) {
+    <p class="notice success" role="status">{{ message }}</p>
+  }
+
+  @if (adding()) {
+    <form class="card" (ngSubmit)="add()">
+      <h2 class="card-title">Add a qualification</h2>
+      <p class="muted admit-lede">
+        A qualification is the precondition for issuing credentials against it, so this is recorded
+        in the audit ledger like any other change to what the register can attest to.
+      </p>
+
+      <div class="admit-grid">
+        <label class="field wide">
+          <span class="field-label">Title</span>
+          <input
+            name="title"
+            required
+            placeholder="BSc Computer Science"
+            [(ngModel)]="title"
+            [disabled]="busy()"
+          />
+          <span class="field-hint"
+            >The registered title. A duplicate at one institution is refused.</span
+          >
+        </label>
+
+        <label class="field">
+          <span class="field-label">NQF level</span>
+          <input
+            name="nqfLevel"
+            type="number"
+            min="1"
+            max="10"
+            required
+            [(ngModel)]="nqfLevel"
+            [disabled]="busy()"
+          />
+        </label>
+
+        <label class="field">
+          <span class="field-label">Credits</span>
+          <input
+            name="credits"
+            type="number"
+            min="1"
+            max="2000"
+            required
+            [(ngModel)]="credits"
+            [disabled]="busy()"
+          />
+        </label>
+
+        <label class="field">
+          <span class="field-label">SAQA id</span>
+          <input name="saqaQualId" [(ngModel)]="saqaQualId" [disabled]="busy()" />
+          <span class="field-hint">Optional.</span>
+        </label>
+      </div>
+
+      <div class="actions">
+        <button class="primary" type="submit" [disabled]="busy() || !title">
+          {{ busy() ? 'Recording' : 'Add qualification' }}
+        </button>
+        <button type="button" (click)="toggleAdding()" [disabled]="busy()">Cancel</button>
+      </div>
+    </form>
+  }
+
+  @switch (state()) {
+    @case ('loading') {
+      <p class="state" role="status">Loading qualifications…</p>
+    }
+    @case ('failed') {
+      <div class="state error" role="alert">
+        <p>Could not load the qualifications.</p>
+        <button type="button" (click)="load()">Try again</button>
+      </div>
+    }
+    @case ('ready') {
+      @if (rows().length === 0) {
+        <p class="state" role="status" aria-live="polite">
+          @if (isFiltered() && totalLoaded() > 0) {
+            Nothing matches "{{ filterTerm() }}".
+          } @else {
+            @if (canAdd) {
+              Nothing recorded yet. Add a qualification before registering an award against it.
+            } @else {
+              This institution has no qualifications recorded.
+            }
+          }
+        </p>
+      } @else {
+        <div class="table-scroll">
+          <table>
+            <caption class="visually-hidden">
+              {{
+                rows().length
+              }}
+              qualification{{
+                rows().length === 1 ? '' : 's'
+              }}
+            </caption>
+            <thead>
+              <tr>
+                <th scope="col">Title</th>
+                <th scope="col">NQF</th>
+                <th scope="col">Credits</th>
+                <th scope="col">SAQA id</th>
+                <th scope="col">Identity</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (qualification of rows(); track qualification.id) {
+                <tr [class.lapsed]="qualification.phasedOut">
+                  <td>
+                    {{ qualification.title }}
+                    @if (qualification.phasedOut) {
+                      <span class="pill warn">Phased out</span>
+                    }
+                  </td>
+                  <td class="mono">{{ qualification.nqfLevel }}</td>
+                  <td class="mono">{{ qualification.credits }}</td>
+                  <td class="mono">{{ qualification.saqaQualId ?? '—' }}</td>
+                  <td class="row-actions">
+                    <button type="button" (click)="copyId(qualification)">
+                      <app-icon name="copy" [size]="15" />
+                      <span>{{ copied() === qualification.id ? 'Copied' : 'Copy id' }}</span>
+                    </button>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+        <p class="muted table-caption" aria-live="polite">
+          {{ rows().length }} qualification{{ rows().length === 1 ? '' : 's' }}
+          @if (isFiltered()) {
+            of {{ totalLoaded() }}
+          }
+          @if (canRegisterAwards) {
+            · copy an identity to register an award against it.
+          }
+        </p>
+      }
+    }
+  }
+</div>

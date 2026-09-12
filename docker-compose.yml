@@ -1,0 +1,148 @@
+# One command for an assessor: `docker compose --profile seed up`.
+# The api image is the same digest CI publishes; nothing here is a special build.
+name: qvs
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: qvs
+      POSTGRES_USER: qvs
+      POSTGRES_PASSWORD: qvs
+    ports:
+      # Published on 5433, and bound to loopback only. Two reasons, both learned the hard
+      # way: a developer machine with its own PostgreSQL already holds 5432, and when it
+      # does, Docker quietly binds only the IPv6 address -- so the app connects to the
+      # wrong database and reports an authentication failure that looks like a bad
+      # password. Binding to 127.0.0.1 also keeps a seeded dev database off the network.
+      - "127.0.0.1:5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      # The api waits on this: Flyway against a half-started server fails confusingly.
+      test: ["CMD-SHELL", "pg_isready -U qvs -d qvs"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--save", "", "--appendonly", "no"]
+    ports:
+      - "127.0.0.1:6380:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ${QVS_IMAGE:-qvs-api:local}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: ${QVS_PROFILE:-dev}
+      QVS_DB_URL: jdbc:postgresql://postgres:5432/qvs
+      QVS_DB_USER: qvs
+      QVS_DB_PASSWORD: qvs
+
+      # Inside the compose network the other services are reachable by service name. Left at
+      # its default the application would look for Redis on its own loopback and find nothing.
+      QVS_REDIS_HOST: redis
+      QVS_REDIS_PORT: 6379
+
+      # Private signing keys live on a volume, never inside the image. Keys baked into an
+      # image are keys published to whatever registry that image is pushed to.
+      QVS_VAULT_DIR: /vault
+
+      # No defaults, deliberately. `:?` makes compose refuse to start with a message naming
+      # the missing variable, rather than passing an empty string that would surface later as
+      # an obscure decryption failure. Copy .env.example to .env and fill it in.
+      QVS_FIELD_KEY: ${QVS_FIELD_KEY:?set QVS_FIELD_KEY in .env - see .env.example}
+      QVS_NATIONAL_ID_SALT: ${QVS_NATIONAL_ID_SALT:?set QVS_NATIONAL_ID_SALT in .env}
+      QVS_IP_SALT: ${QVS_IP_SALT:?set QVS_IP_SALT in .env}
+      QVS_JWT_SECRET: ${QVS_JWT_SECRET:?set QVS_JWT_SECRET in .env}
+
+      # The first administrator, and the only way into a system whose user table is empty.
+      # Optional rather than required: once anybody exists the application ignores these, so a
+      # running deployment must not be made to fail for want of a credential it will not use.
+      QVS_BOOTSTRAP_ADMIN_EMAIL: ${QVS_BOOTSTRAP_ADMIN_EMAIL:-}
+      QVS_BOOTSTRAP_ADMIN_PASSWORD: ${QVS_BOOTSTRAP_ADMIN_PASSWORD:-}
+
+      # The actuator moves to its own port so Prometheus can scrape it without a bearer token
+      # -- this system issues short-lived tokens to people, not long-lived ones to scrapers,
+      # and the alternative was publishing metrics on the application's own port. They
+      # disclose request rates, error counts, JVM internals and the shape of the deployment,
+      # which is reconnaissance.
+      # Spring's own property name, so it binds without the application declaring anything.
+      MANAGEMENT_SERVER_PORT: 9090
+    volumes:
+      - vault:/vault
+    ports:
+      # 8081 on the host, 8080 in the container. Developer machines commonly already run
+      # something on 8080 (Apache, Tomcat, another service), and when they do, Docker binds
+      # only the IPv6 address -- so requests to localhost land on whichever the resolver
+      # happens to try first. That produces baffling 404s from someone else's server.
+      - "127.0.0.1:8081:8080"
+      # The management port, on loopback like everything else here: an assessor can curl the
+      # probes, and nothing off this machine can reach them. Prometheus does not use this
+      # mapping -- it reaches api:9090 across the Compose network.
+      - "127.0.0.1:9090:9090"
+    # No container healthcheck here on purpose: the runtime layer is distroless, so it has
+    # no shell, no curl and no wget to probe with. Liveness/readiness (NFR-07) are HTTP
+    # probes against /actuator/health/{liveness,readiness}, configured by the platform in
+    # S14 rather than by the container. Adding a `:debug` busybox image just to satisfy
+    # Compose would put a shell into the production image, which is the thing distroless
+    # is for avoiding.
+
+  prometheus:
+    image: prom/prometheus:v2.54.1
+    depends_on:
+      - api
+    volumes:
+      - ./ops/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./ops/prometheus/alerts.yml:/etc/prometheus/alerts.yml:ro
+      - promdata:/prometheus
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.retention.time=7d
+    ports:
+      # Loopback only. Prometheus has no authentication of its own, and its query API would
+      # answer anybody who could reach it.
+      - "127.0.0.1:9091:9090"
+
+  grafana:
+    image: grafana/grafana:11.2.0
+    depends_on:
+      - prometheus
+    environment:
+      # The demo's Grafana holds no secrets -- it reads one Prometheus that reads one API --
+      # but it still gets a password rather than the default admin/admin, because a default
+      # credential in a compose file is how a default credential reaches production.
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_USER:-qvs}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:?set GRAFANA_PASSWORD in .env - see .env.example}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_AUTH_ANONYMOUS_ENABLED: "false"
+      GF_ANALYTICS_REPORTING_ENABLED: "false"
+      GF_ANALYTICS_CHECK_FOR_UPDATES: "false"
+    volumes:
+      - ./ops/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./ops/grafana/dashboards:/etc/grafana/dashboards:ro
+      - grafanadata:/var/lib/grafana
+    ports:
+      - "127.0.0.1:3001:3000"
+
+volumes:
+  pgdata:
+  promdata:
+  grafanadata:
+  # Signing keys survive a container rebuild. Losing this volume means losing the private
+  # halves of every institution key, and every credential signed with them becomes
+  # unverifiable -- the vault refuses to overwrite a key precisely to make that loud.
+  vault:

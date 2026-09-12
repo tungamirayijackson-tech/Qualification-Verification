@@ -1,0 +1,228 @@
+<div class="page">
+  <header class="head">
+    <div>
+      <div class="page-heading">
+        <app-icon name="building" [size]="26" />
+        <h1 class="page-title">Awarding bodies</h1>
+      </div>
+      <p class="sub">Institutions permitted to register qualifications in this system.</p>
+    </div>
+    <div class="actions">
+      <label class="toggle">
+        <input
+          type="checkbox"
+          [checked]="eligibleOnly()"
+          (change)="toggleEligibleOnly()"
+          aria-describedby="eligible-help"
+        />
+        <span>Only those that may issue today</span>
+      </label>
+      @if (isAdmin) {
+        <button class="primary" type="button" (click)="toggleAdding()">
+          <app-icon [name]="adding() ? 'close' : 'building'" [size]="16" />
+          <span>{{ adding() ? 'Cancel' : 'Admit an institution' }}</span>
+        </button>
+      }
+    </div>
+  </header>
+  <p id="eligible-help" class="help">
+    An institution may issue only while its accreditation is current
+    <em>and</em> it has a signing key configured.
+  </p>
+
+  <label class="field filter-field">
+    <span class="visually-hidden">Filter institutions</span>
+    <span class="filter-box">
+      <app-icon name="search" [size]="16" />
+      <input
+        type="search"
+        name="filter"
+        autocomplete="off"
+        placeholder="Filter by name, country, provider number or key"
+        [value]="filterTerm()"
+        (input)="onFilter($any($event.target).value)"
+      />
+    </span>
+    <span class="field-hint">
+      Narrows the list as you type. Capitalisation and accents are ignored.
+    </span>
+  </label>
+
+  @if (error(); as message) {
+    <p class="notice error" role="alert">{{ message }}</p>
+  }
+  @if (note(); as message) {
+    <p class="notice success" role="status">{{ message }}</p>
+  }
+
+  @if (isAdmin && adding()) {
+    <form class="card" (ngSubmit)="onboard()">
+      <h2 class="card-title">Admit an awarding body</h2>
+      <p class="muted admit-lede">
+        This decides whose signature the register will vouch for. The institution is admitted
+        without a signing key and cannot issue anything until one is issued for it — a separate act,
+        so a mistyped provider number does not leave a key behind that cannot be deleted.
+      </p>
+
+      <div class="admit-grid">
+        <label class="field">
+          <span class="field-label">Registered name</span>
+          <input name="name" required [(ngModel)]="name" [disabled]="busy()" />
+        </label>
+
+        <label class="field">
+          <span class="field-label">Country</span>
+          <input
+            name="country"
+            required
+            maxlength="2"
+            placeholder="ZW"
+            [(ngModel)]="country"
+            [disabled]="busy()"
+          />
+          <span class="field-hint">ISO 3166-1 alpha-2.</span>
+        </label>
+
+        <label class="field">
+          <span class="field-label">Provider number</span>
+          <input
+            name="providerNumber"
+            required
+            placeholder="PR-0142"
+            [(ngModel)]="providerNumber"
+            [disabled]="busy()"
+          />
+          <span class="field-hint">Identifies one institution; a duplicate is refused.</span>
+        </label>
+
+        <label class="field">
+          <span class="field-label">Accredited until</span>
+          <input
+            name="accreditedUntil"
+            type="date"
+            required
+            [(ngModel)]="accreditedUntil"
+            [disabled]="busy()"
+          />
+          <span class="field-hint">Must be in the future.</span>
+        </label>
+      </div>
+
+      <div class="actions">
+        <button
+          class="primary"
+          type="submit"
+          [disabled]="busy() || !name || !providerNumber || !accreditedUntil"
+        >
+          {{ busy() ? 'Admitting' : 'Admit institution' }}
+        </button>
+        <button type="button" (click)="toggleAdding()" [disabled]="busy()">Cancel</button>
+      </div>
+    </form>
+  }
+
+  @switch (state()) {
+    @case ('loading') {
+      <p class="state" role="status">Loading the register…</p>
+    }
+    @case ('failed') {
+      <div class="state error" role="alert">
+        <p>Could not reach the register.</p>
+        <button type="button" (click)="load()">Try again</button>
+      </div>
+    }
+    @case ('ready') {
+      @if (institutions().length === 0) {
+        <p class="state" role="status" aria-live="polite">
+          @if (isFiltered() && totalLoaded() > 0) {
+            Nothing matches "{{ filterTerm() }}".
+          } @else {
+            No institutions match.
+          }
+          @if (eligibleOnly()) {
+            Try clearing the accreditation filter.
+          }
+        </p>
+      } @else {
+        <div class="table-scroll">
+          <table>
+            <caption class="visually-hidden">
+              {{
+                institutions().length
+              }}
+              institution{{
+                institutions().length === 1 ? '' : 's'
+              }}
+            </caption>
+            <thead>
+              <tr>
+                <th scope="col">Institution</th>
+                <th scope="col">Country</th>
+                <th scope="col">Provider no.</th>
+                <th scope="col">Accredited until</th>
+                <th scope="col">Signing key</th>
+                @if (isAdmin) {
+                  <th scope="col">
+                    <span class="visually-hidden">Actions</span>
+                  </th>
+                }
+              </tr>
+            </thead>
+            <tbody>
+              @for (institution of institutions(); track institution.id) {
+                <tr [class.lapsed]="hasLapsed(institution)">
+                  <td>{{ institution.name }}</td>
+                  <td>{{ institution.country }}</td>
+                  <td class="mono">{{ institution.providerNumber }}</td>
+                  <td class="mono">
+                    {{ institution.accreditedUntil }}
+                    @if (hasLapsed(institution)) {
+                      <span class="pill bad">Lapsed</span>
+                    }
+                  </td>
+                  <td class="mono">
+                    @if (institution.activeKeyId) {
+                      {{ institution.activeKeyId }}
+                    } @else {
+                      <span class="pill warn">Not onboarded</span>
+                    }
+                  </td>
+                  @if (isAdmin) {
+                    <td class="row-actions">
+                      <button
+                        type="button"
+                        (click)="issueKey(institution)"
+                        [disabled]="keying() !== null"
+                      >
+                        <app-icon name="key" [size]="15" />
+                        <span>
+                          @if (keying() === institution.id) {
+                            Issuing
+                          } @else if (institution.activeKeyId) {
+                            Rotate key
+                          } @else {
+                            Issue key
+                          }
+                        </span>
+                      </button>
+                    </td>
+                  }
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+        <p class="muted table-caption" aria-live="polite">
+          {{ institutions().length }} institution{{ institutions().length === 1 ? '' : 's' }}
+          @if (isFiltered()) {
+            of {{ totalLoaded() }}
+          }
+          @if (isAdmin) {
+            · rotating a key does not affect credentials already signed: verification checks the key
+            that was valid on the award date.
+          }
+        </p>
+      }
+    }
+  }
+</div>

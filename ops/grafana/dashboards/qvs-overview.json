@@ -1,0 +1,260 @@
+{
+  "uid": "qvs-overview",
+  "title": "QVS · Register overview",
+  "description": "What the register is doing and whether anything is wrong with it. Ordered by what an operator needs first: integrity, then abuse, then latency, then the machine.",
+  "tags": ["qvs"],
+  "timezone": "browser",
+  "editable": false,
+  "schemaVersion": 39,
+  "refresh": "10s",
+  "time": { "from": "now-1h", "to": "now" },
+  "panels": [
+    {
+      "type": "row",
+      "title": "Integrity",
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 }
+    },
+    {
+      "type": "stat",
+      "title": "Failed integrity checks (1h)",
+      "description": "A verification that fails its signature, issuer-standing or ledger check is reported to the caller as NOT_FOUND, so they learn nothing about how close a forgery came. This is where that information goes instead. Anything above zero means somebody presented an altered credential. Falls back to vector(0) so an untroubled register reads 0 rather than 'No data', which would be indistinguishable from a broken panel.",
+      "datasource": { "type": "prometheus", "uid": "qvs-prometheus" },
+      "gridPos": { "h": 6, "w": 6, "x": 0, "y": 1 },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(increase(qvs_verifications_total{failed_check!=\"none\"}[1h])) or vector(0)",
+          "legendFormat": "failed checks"
+        }
+      ],
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "colorMode": "background",
+        "graphMode": "area",
+        "textMode": "auto"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "decimals": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "red", "value": 1 }
+            ]
+          }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Verifications by verdict",
+      "description": "The mix, not just the volume. A register in ordinary use is mostly VALID with a scattering of NOT_FOUND from mistyped links; a rising NOT_FOUND line with a flat VALID one is somebody guessing.",
+      "datasource": { "type": "prometheus", "uid": "qvs-prometheus" },
+      "gridPos": { "h": 6, "w": 12, "x": 6, "y": 1 },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (verdict) (rate(qvs_verifications_total[5m]))",
+          "legendFormat": "{{verdict}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps",
+          "custom": { "drawStyle": "line", "fillOpacity": 10, "lineWidth": 2 },
+          "color": { "mode": "palette-classic" }
+        },
+        "overrides": [
+          {
+            "matcher": { "id": "byName", "options": "VALID" },
+            "properties": [{ "id": "color", "value": { "mode": "fixed", "fixedColor": "green" } }]
+          },
+          {
+            "matcher": { "id": "byName", "options": "REVOKED" },
+            "properties": [{ "id": "color", "value": { "mode": "fixed", "fixedColor": "orange" } }]
+          },
+          {
+            "matcher": { "id": "byName", "options": "NOT_FOUND" },
+            "properties": [{ "id": "color", "value": { "mode": "fixed", "fixedColor": "text" } }]
+          }
+        ]
+      }
+    },
+    {
+      "type": "stat",
+      "title": "Signed reports taken (1h)",
+      "description": "FR-12. Each one ran a fresh verification and has its own entry in the audit ledger.",
+      "datasource": { "type": "prometheus", "uid": "qvs-prometheus" },
+      "gridPos": { "h": 6, "w": 6, "x": 18, "y": 1 },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(increase(qvs_verification_reports_total[1h]))",
+          "legendFormat": "reports"
+        }
+      ],
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "colorMode": "value",
+        "graphMode": "area"
+      },
+      "fieldConfig": { "defaults": { "decimals": 0 }, "overrides": [] }
+    },
+    {
+      "type": "row",
+      "title": "Abuse",
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 7 }
+    },
+    {
+      "type": "timeseries",
+      "title": "Requests refused (429), by policy",
+      "description": "FR-11. The public check allows 60 requests a minute per address and a report 10, because a report costs a render and a signature where a check costs a query. A person cannot produce a sustained line here.",
+      "datasource": { "type": "prometheus", "uid": "qvs-prometheus" },
+      "gridPos": { "h": 7, "w": 12, "x": 0, "y": 8 },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (policy) (rate(qvs_rate_limit_refusals_total[5m]))",
+          "legendFormat": "{{policy}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps",
+          "custom": { "drawStyle": "bars", "fillOpacity": 60, "lineWidth": 1 }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Refusals decided locally, not in Redis",
+      "description": "When Redis is unreachable the limiter falls back to an in-memory budget per instance, so the effective limit across a scaled-out deployment is the published one multiplied by the replica count. Worth knowing before concluding the limit does not work.",
+      "datasource": { "type": "prometheus", "uid": "qvs-prometheus" },
+      "gridPos": { "h": 7, "w": 12, "x": 12, "y": 8 },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(rate(qvs_rate_limit_degraded_total[5m]))",
+          "legendFormat": "degraded decisions"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps",
+          "custom": { "drawStyle": "line", "fillOpacity": 20, "lineWidth": 2 },
+          "color": { "mode": "fixed", "fixedColor": "orange" }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "type": "row",
+      "title": "Latency (NFR-01)",
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 15 }
+    },
+    {
+      "type": "timeseries",
+      "title": "Public verification latency",
+      "description": "NFR-01 asks for p95 under 400 ms at 50 concurrent users. The load stage in perf/ measures 77–111 ms, so the red line is a long way above where this should sit.",
+      "datasource": { "type": "prometheus", "uid": "qvs-prometheus" },
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 16 },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "histogram_quantile(0.50, sum by (le) (rate(http_server_requests_seconds_bucket{uri=~\"/public/v1/verify.*\"}[5m])))",
+          "legendFormat": "p50"
+        },
+        {
+          "refId": "B",
+          "expr": "histogram_quantile(0.95, sum by (le) (rate(http_server_requests_seconds_bucket{uri=~\"/public/v1/verify.*\"}[5m])))",
+          "legendFormat": "p95"
+        },
+        {
+          "refId": "C",
+          "expr": "histogram_quantile(0.99, sum by (le) (rate(http_server_requests_seconds_bucket{uri=~\"/public/v1/verify.*\"}[5m])))",
+          "legendFormat": "p99"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "lineWidth": 2,
+            "thresholdsStyle": { "mode": "line" }
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "red", "value": 0.4 }
+            ]
+          }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "type": "row",
+      "title": "The machine",
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 24 }
+    },
+    {
+      "type": "timeseries",
+      "title": "JVM heap used",
+      "datasource": { "type": "prometheus", "uid": "qvs-prometheus" },
+      "gridPos": { "h": 7, "w": 8, "x": 0, "y": 25 },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(jvm_memory_used_bytes{area=\"heap\"})",
+          "legendFormat": "used"
+        },
+        {
+          "refId": "B",
+          "expr": "sum(jvm_memory_max_bytes{area=\"heap\"})",
+          "legendFormat": "max"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "bytes" }, "overrides": [] }
+    },
+    {
+      "type": "timeseries",
+      "title": "Database connections in use",
+      "description": "The verify path takes a connection for two writes. A pool sitting at its ceiling is the first thing to look at if latency climbs.",
+      "datasource": { "type": "prometheus", "uid": "qvs-prometheus" },
+      "gridPos": { "h": 7, "w": 8, "x": 8, "y": 25 },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "hikaricp_connections_active",
+          "legendFormat": "active"
+        },
+        {
+          "refId": "B",
+          "expr": "hikaricp_connections_max",
+          "legendFormat": "max"
+        }
+      ],
+      "fieldConfig": { "defaults": { "decimals": 0 }, "overrides": [] }
+    },
+    {
+      "type": "timeseries",
+      "title": "HTTP responses by status",
+      "datasource": { "type": "prometheus", "uid": "qvs-prometheus" },
+      "gridPos": { "h": 7, "w": 8, "x": 16, "y": 25 },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (status) (rate(http_server_requests_seconds_count[5m]))",
+          "legendFormat": "{{status}}"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "reqps" }, "overrides": [] }
+    }
+  ]
+}

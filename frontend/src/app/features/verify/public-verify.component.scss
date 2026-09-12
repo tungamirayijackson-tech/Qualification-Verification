@@ -1,0 +1,217 @@
+.verify {
+  max-width: 60rem;
+}
+
+/* The search box and its button on one line, as in the design. */
+.search-row {
+  display: flex;
+  gap: 0.6rem;
+  align-items: stretch;
+
+  input {
+    flex: 1 1 auto;
+  }
+
+  button {
+    flex: none;
+    padding-inline: 1.25rem;
+  }
+}
+
+/* ------------------------------------------------------------------- the answer
+   A tinted banner across the top. This is the only thing most visitors came for, and it is
+   read once, quickly, often on a phone: the shape of a tick is legible before any of the
+   words are. The verdict is also written in text beside it, and the icon is hidden from
+   assistive technology, because an interface that says "withdrawn" only in red and only as a
+   symbol has told a screen-reader user nothing. */
+.verdict-banner {
+  display: flex;
+  gap: 0.9rem;
+  align-items: center;
+  margin-bottom: 1.25rem;
+  padding: 1.1rem 1.25rem;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.verdict-banner.ok {
+  border-color: color-mix(in srgb, var(--good) 35%, transparent);
+  background: var(--good-soft);
+}
+
+.verdict-banner.bad {
+  border-color: color-mix(in srgb, var(--bad) 35%, transparent);
+  background: var(--bad-soft);
+}
+
+.verdict-banner.warn {
+  border-color: color-mix(in srgb, var(--warn) 35%, transparent);
+  background: var(--warn-soft);
+}
+
+.verdict-emblem {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 50%;
+  background: var(--surface);
+}
+
+.verdict-banner.ok .verdict-emblem {
+  color: var(--good);
+}
+
+.verdict-banner.bad .verdict-emblem {
+  color: var(--bad);
+}
+
+.verdict-banner.warn .verdict-emblem {
+  color: var(--warn);
+}
+
+.verdict-words {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.verdict-title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 650;
+}
+
+.verdict-banner.ok .verdict-title {
+  color: color-mix(in srgb, var(--good) 80%, var(--ink));
+}
+
+.verdict-banner.bad .verdict-title {
+  color: color-mix(in srgb, var(--bad) 85%, var(--ink));
+}
+
+.verdict-banner.warn .verdict-title {
+  color: color-mix(in srgb, var(--warn) 85%, var(--ink));
+}
+
+.verdict-wording {
+  margin: 0.15rem 0 0;
+  color: var(--ink-2);
+  font-size: 0.92rem;
+}
+
+.verdict-banner .pill {
+  flex: none;
+  background: var(--surface);
+}
+
+/* ------------------------------------------------------------------ the detail */
+
+.verdict-columns {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(19rem, 1fr));
+  gap: 1.25rem;
+  align-items: start;
+  margin-bottom: 1.25rem;
+
+  /* Two cards side by side, so the `.card + .card` top margin from the shared idiom would
+     push the second one down out of line with the first. */
+  .card + .card {
+    margin-top: 0;
+  }
+}
+
+.detail {
+  display: grid;
+  grid-template-columns: minmax(7rem, 9rem) 1fr;
+  gap: 0.6rem 1.25rem;
+  margin: 0;
+}
+
+.detail dt {
+  color: var(--ink-3);
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.detail dd {
+  margin: 0;
+  font-weight: 500;
+}
+
+.checks-title {
+  margin: 1.5rem 0 0.5rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--ink-3);
+  text-transform: uppercase;
+}
+
+.checks {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.checks li {
+  display: flex;
+  gap: 0.55rem;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--rule);
+  font-size: 0.9rem;
+}
+
+.checks li:last-child {
+  border-bottom: 0;
+}
+
+/* The pill sits at the right-hand end, so the outcomes line up in a column the eye can run
+   down rather than being staggered by the length of each label. */
+.checks .pill {
+  margin-left: auto;
+}
+
+.check-mark.ok {
+  color: var(--good);
+}
+
+.check-mark.bad {
+  color: var(--bad);
+}
+
+.revoked-note {
+  margin: 1rem 0 0;
+  font-size: 0.88rem;
+}
+
+/* ---------------------------------------------------------------- what to do next */
+
+.report-card .actions {
+  margin-bottom: 0.9rem;
+}
+
+.report-card .field-hint + .field-hint {
+  margin-top: 0.5rem;
+}
+
+@media (max-width: 34rem) {
+  .search-row {
+    flex-direction: column;
+  }
+
+  .detail {
+    grid-template-columns: 1fr;
+    gap: 0.15rem;
+  }
+
+  .detail dd {
+    margin-bottom: 0.7rem;
+  }
+
+  .verdict-banner {
+    flex-wrap: wrap;
+  }
+}

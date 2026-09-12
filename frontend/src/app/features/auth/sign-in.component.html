@@ -1,0 +1,133 @@
+<div class="page sign-in">
+  <div class="page-heading">
+    <app-icon name="lock" [size]="26" />
+    <h1 class="page-title">Sign in</h1>
+  </div>
+  <p class="page-lede">
+    The console is for registrars, auditors and administrators. Checking a credential needs no
+    account at all — use the share link the holder gave you.
+  </p>
+
+  @if (error(); as message) {
+    <p class="notice error" role="alert">{{ message }}</p>
+  }
+  @if (note(); as message) {
+    <p class="notice success" role="status">{{ message }}</p>
+  }
+
+  @if (step() === 'credentials') {
+    <form class="card" (ngSubmit)="submit()" #form="ngForm">
+      <label class="field">
+        <span class="field-label">Email address</span>
+        <input
+          name="email"
+          type="email"
+          autocomplete="username"
+          required
+          [(ngModel)]="email"
+          [disabled]="busy()"
+        />
+      </label>
+
+      <label class="field">
+        <span class="field-label">Password</span>
+        <input
+          name="password"
+          type="password"
+          autocomplete="current-password"
+          required
+          [(ngModel)]="password"
+          [disabled]="busy()"
+        />
+      </label>
+
+      <label class="field">
+        <span class="field-label">Authentication code</span>
+        <input
+          name="totpCode"
+          inputmode="numeric"
+          autocomplete="one-time-code"
+          maxlength="6"
+          placeholder="000000"
+          [(ngModel)]="totpCode"
+          [disabled]="busy()"
+        />
+        <span class="field-hint">
+          Required for registrars and administrators. Leave blank if your role has no second factor.
+        </span>
+      </label>
+
+      <div class="actions">
+        <button class="primary" type="submit" [disabled]="busy() || form.invalid">
+          {{ busy() ? 'Signing in' : 'Sign in' }}
+        </button>
+      </div>
+    </form>
+  } @else {
+    <form class="card" (ngSubmit)="confirmEnrolment()">
+      <h2 class="card-title">Set up your second factor</h2>
+      <p class="muted">
+        Your role can change what the register says, so a password alone is not enough. Scan this
+        with an authenticator app — Google Authenticator, Microsoft Authenticator, 1Password, Authy
+        — then enter the six-digit code it shows.
+      </p>
+
+      @if (qrDataUrl(); as qr) {
+        <div class="qr">
+          <img
+            [src]="qr"
+            width="208"
+            height="208"
+            alt="QR code containing your authenticator setup key. If you cannot scan it, use the
+                 setup key printed below."
+          />
+        </div>
+      }
+
+      <details class="manual">
+        <summary>Can’t scan it? Enter the key by hand</summary>
+        <p class="field-hint">
+          In your authenticator choose <em>Enter a setup key</em> (or <em>Manual entry</em>), give
+          the account any name you like, paste the key below, and leave the type as
+          <em>time-based</em>.
+        </p>
+
+        <div class="field">
+          <span class="field-label">Setup key</span>
+          <code class="copyable mono">{{ mfaSecret() }}</code>
+          <span class="field-hint">
+            Shown once. If you lose it, sign in again and a fresh enrolment is offered.
+          </span>
+        </div>
+
+        <div class="field">
+          <span class="field-label">Full setup link</span>
+          <code class="copyable mono">{{ otpauthUri() }}</code>
+          <span class="field-hint">
+            Some desktop authenticators accept this <code>otpauth://</code> URI directly.
+          </span>
+        </div>
+      </details>
+
+      <label class="field">
+        <span class="field-label">Code from your app</span>
+        <input
+          name="enrolCode"
+          inputmode="numeric"
+          autocomplete="one-time-code"
+          maxlength="6"
+          required
+          placeholder="000000"
+          [(ngModel)]="totpCode"
+          [disabled]="busy()"
+        />
+      </label>
+
+      <div class="actions">
+        <button class="primary" type="submit" [disabled]="busy() || totpCode.length !== 6">
+          {{ busy() ? 'Checking' : 'Confirm enrolment' }}
+        </button>
+      </div>
+    </form>
+  }
+</div>

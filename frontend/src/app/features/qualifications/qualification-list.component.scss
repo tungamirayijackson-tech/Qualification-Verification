@@ -1,0 +1,115 @@
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.sub {
+  margin: 0.35rem 0 0;
+  max-width: 60ch;
+  color: var(--ink-3);
+}
+
+.help {
+  margin: 0.75rem 0 1.5rem;
+  max-width: 70ch;
+  font-size: 0.875rem;
+  color: var(--ink-3);
+}
+
+.institution-picker {
+  max-width: 26rem;
+  margin: 1.25rem 0;
+}
+
+.admit-lede {
+  margin: -0.5rem 0 1.25rem;
+  max-width: 70ch;
+  font-size: 0.9rem;
+}
+
+.admit-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  gap: 0 1.25rem;
+}
+
+/* The title needs more room than a number does. */
+.admit-grid .wide {
+  grid-column: 1 / -1;
+}
+
+.state {
+  padding: 2rem 0;
+  color: var(--ink-3);
+}
+
+.state.error {
+  color: var(--bad);
+
+  button {
+    margin-top: 0.75rem;
+  }
+}
+
+/* A phased-out qualification keeps its credentials and accepts no new awards, so it is dimmed
+   rather than hidden -- an auditor still needs to see what it was. */
+tr.lapsed td {
+  color: var(--ink-3);
+}
+
+td .pill {
+  margin-left: 0.4rem;
+}
+
+.row-actions {
+  width: 1%;
+  white-space: nowrap;
+
+  button {
+    padding: 0.35rem 0.7rem;
+    font-size: 0.82rem;
+  }
+}
+
+.table-caption {
+  margin: 0.75rem 0 0;
+  font-size: 0.85rem;
+}
+
+/* ------------------------------------------------------------------ the filter */
+
+.filter-field {
+  max-width: 30rem;
+  margin-bottom: 1.5rem;
+}
+
+.filter-box {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  padding-left: 0.75rem;
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--ink-3);
+
+  &:focus-within {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent);
+  }
+
+  input {
+    flex: 1 1 auto;
+    border: 0;
+    background: none;
+    padding-left: 0;
+
+    &:focus {
+      outline: none;
+      box-shadow: none;
+    }
+  }
+}

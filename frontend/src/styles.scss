@@ -1,0 +1,540 @@
+/* Design tokens.
+ *
+ * The palette follows the supplied design: a blue-forward interface on a very light blue-grey
+ * page, with a deep navy shell for the console's navigation. Three colours carry meaning and
+ * are kept apart on purpose:
+ *
+ *   --accent  blue    something you can do        buttons, links, focus, the active nav item
+ *   --good    green   something that checked out  a valid verdict, a verified signature
+ *   --bad     red     something that did not
+ *
+ * They were one colour before this. A green accent that also meant "valid" made a button look
+ * like a verdict, and on the one screen a stranger uses that is a genuinely bad idea.
+ *
+ * Defined light-first, then redefined for dark, so the console follows the operator's system
+ * setting. The navy shell stays navy in both — the design has a permanently dark sidebar
+ * against a light page, and inverting it under a dark theme would lose the thing that makes
+ * the console recognisable.
+ */
+:root {
+  --paper: #f4f7fb;
+  --surface: #ffffff;
+  --surface-2: #f8fafc;
+
+  --ink: #0f172a;
+  --ink-2: #334155;
+  --ink-3: #64748b;
+
+  --rule: #e2e8f0;
+  --rule-strong: #cbd5e1;
+
+  --accent: #2563eb;
+  --accent-strong: #1d4ed8;
+  --accent-soft: #eff6ff;
+
+  --good: #16a34a;
+  --good-soft: #dcfce7;
+  --bad: #dc2626;
+  --bad-soft: #fee2e2;
+  --warn: #d97706;
+  --warn-soft: #fef3c7;
+
+  /* The navigation shell and the landing hero. Fixed in both themes. */
+  --shell: #0e1f38;
+  --shell-2: #17304f;
+  --shell-ink: #e2e8f0;
+  --shell-ink-3: #94a3b8;
+
+  --radius: 10px;
+  --radius-sm: 6px;
+  --shadow: 0 1px 2px rgb(15 23 42 / 6%), 0 1px 3px rgb(15 23 42 / 5%);
+  --shadow-lift: 0 4px 12px rgb(15 23 42 / 8%);
+
+  color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #0b1220;
+    --surface: #131c2e;
+    --surface-2: #0f1827;
+
+    --ink: #e2e8f0;
+    --ink-2: #cbd5e1;
+    --ink-3: #94a3b8;
+
+    --rule: #1e293b;
+    --rule-strong: #334155;
+
+    --accent: #60a5fa;
+    --accent-strong: #93c5fd;
+    --accent-soft: #16233c;
+
+    --good: #4ade80;
+    --good-soft: #14301f;
+    --bad: #f87171;
+    --bad-soft: #34191b;
+    --warn: #fbbf24;
+    --warn-soft: #332616;
+
+    --shadow: 0 1px 2px rgb(0 0 0 / 40%), 0 1px 3px rgb(0 0 0 / 30%);
+    --shadow-lift: 0 4px 14px rgb(0 0 0 / 45%);
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  /* The design is set in Inter. The content security policy is `default-src 'self'`, which
+     blocks the font files a web font would need, and self-hosting a variable font to gain a
+     slightly different "g" is weight on every visit for very little. The system stack renders
+     as Segoe UI on Windows and San Francisco on macOS, both close relatives. */
+  font-family:
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    Roboto,
+    'Helvetica Neue',
+    sans-serif;
+  font-size: 15px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* ------------------------------------------------------------------- controls
+   Laid out as flex rows so an icon can sit beside the label without every caller needing a
+   wrapper. The icons are decorative in every case -- the label names the control -- so
+   nothing here depends on them being present. */
+button,
+.button-link {
+  display: inline-flex;
+  gap: 0.45rem;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--ink-2);
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 500;
+  line-height: 1.4;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    border-color 0.12s ease,
+    color 0.12s ease,
+    background-color 0.12s ease,
+    box-shadow 0.12s ease;
+
+  &:hover:not(:disabled) {
+    border-color: var(--rule-strong);
+    background: var(--surface-2);
+    color: var(--ink);
+  }
+}
+
+button.primary,
+.button-link.primary {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: #ffffff;
+  font-weight: 600;
+  box-shadow: var(--shadow);
+
+  &:hover:not(:disabled) {
+    border-color: var(--accent-strong);
+    background: var(--accent-strong);
+    color: #ffffff;
+  }
+}
+
+/* A control that should not compete with the page: sign out, a menu toggle, a secondary
+   action sitting beside a primary one. */
+button.quiet {
+  border-color: transparent;
+  background: transparent;
+  color: var(--ink-3);
+
+  &:hover:not(:disabled) {
+    border-color: transparent;
+    background: color-mix(in srgb, var(--ink) 6%, transparent);
+    color: var(--ink);
+  }
+}
+
+button.danger {
+  border-color: color-mix(in srgb, var(--bad) 45%, transparent);
+  color: var(--bad);
+
+  &:hover:not(:disabled) {
+    border-color: var(--bad);
+    background: var(--bad-soft);
+    color: var(--bad);
+  }
+}
+
+button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  align-items: center;
+}
+
+/* ---------------------------------------------------------------- shared idiom
+   Classes used across more than one screen live here rather than being repeated in each
+   component stylesheet. Anything used by exactly one component stays with that component. */
+
+.page {
+  max-width: 62rem;
+  margin: 0 auto;
+  padding: 2rem 1.25rem 4rem;
+}
+
+.page-title {
+  margin: 0 0 0.25rem;
+  font-size: 1.75rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.page-lede {
+  margin: 0 0 1.75rem;
+  max-width: 62ch;
+  color: var(--ink-3);
+}
+
+/* The console has a sidebar beside it, so its pages start at the left of what is left rather
+   than centring in the viewport, and can afford to be wider -- the register's tables want the
+   room. Written globally because the shell's class sits on an ancestor of every screen. */
+.shell-console .page {
+  max-width: 74rem;
+  margin: 0;
+  padding: 2rem 2rem 4rem;
+}
+
+/* A heading with its section's emblem beside it, matching the sidebar entry that led here. */
+.page-heading {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  margin-bottom: 0.35rem;
+
+  .page-title {
+    margin: 0;
+  }
+
+  app-icon {
+    color: var(--accent);
+  }
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  box-shadow: var(--shadow);
+}
+
+.card + .card {
+  margin-top: 1.25rem;
+}
+
+.card-title {
+  margin: 0 0 1rem;
+  font-size: 1.05rem;
+  font-weight: 650;
+}
+
+/* A row of figures across the top of a screen, as on the design's dashboards. */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.stat {
+  padding: 1.1rem 1.25rem;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.stat-label {
+  display: block;
+  margin-bottom: 0.35rem;
+  color: var(--ink-3);
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.stat-value {
+  display: block;
+  font-size: 1.75rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+
+.stat-note {
+  display: block;
+  margin-top: 0.3rem;
+  font-size: 0.78rem;
+  color: var(--ink-3);
+}
+
+.stat-note.good {
+  color: var(--good);
+}
+
+.stat-note.bad {
+  color: var(--bad);
+}
+
+/* Underlined tabs, as on the credential detail screen in the design. */
+.tabs {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 1.25rem;
+  border-bottom: 1px solid var(--rule);
+}
+
+.tab {
+  padding: 0.6rem 0;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
+  background: none;
+  color: var(--ink-3);
+  font-size: 0.92rem;
+
+  &:hover:not(:disabled) {
+    background: none;
+    color: var(--ink);
+  }
+
+  &.current {
+    border-bottom-color: var(--accent);
+    color: var(--accent);
+    font-weight: 600;
+  }
+}
+
+/* ---------------------------------------------------------------------- forms */
+
+.field {
+  display: block;
+  margin-bottom: 1.1rem;
+}
+
+.field-label {
+  display: block;
+  margin-bottom: 0.4rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.field-hint {
+  display: block;
+  margin-top: 0.35rem;
+  font-size: 0.8rem;
+  color: var(--ink-3);
+}
+
+.field input,
+.field select,
+.field textarea {
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.92rem;
+  transition:
+    border-color 0.12s ease,
+    box-shadow 0.12s ease;
+
+  &:focus {
+    border-color: var(--accent);
+    outline: none;
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent);
+  }
+}
+
+.field input::placeholder {
+  color: var(--ink-3);
+}
+
+.field input[aria-invalid='true'],
+.field select[aria-invalid='true'] {
+  border-color: var(--bad);
+}
+
+.field-error {
+  display: block;
+  margin-top: 0.35rem;
+  font-size: 0.8rem;
+  color: var(--bad);
+}
+
+/* ----------------------------------------------------------- status messages
+   Filled banners rather than a rule down one side, matching the design. The tint carries the
+   same meaning as the pills, so a screen never says "good" in two different colours. */
+.notice {
+  display: flex;
+  gap: 0.65rem;
+  align-items: flex-start;
+  margin: 0 0 1.25rem;
+  padding: 0.9rem 1.1rem;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  background: var(--surface);
+
+  p {
+    margin: 0;
+  }
+
+  p + p {
+    margin-top: 0.35rem;
+  }
+}
+
+.notice.error {
+  border-color: color-mix(in srgb, var(--bad) 30%, transparent);
+  background: var(--bad-soft);
+  color: var(--bad);
+}
+
+.notice.success {
+  border-color: color-mix(in srgb, var(--good) 30%, transparent);
+  background: var(--good-soft);
+  color: color-mix(in srgb, var(--good) 80%, var(--ink));
+}
+
+/* --------------------------------------------------------- verdicts and status
+   Filled, as in the design, rather than outlined. A filled badge reads as a state; an
+   outlined one reads as a control somebody forgot to make clickable. */
+.pill {
+  display: inline-block;
+  padding: 0.15rem 0.6rem 0.2rem;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--ink-3) 12%, transparent);
+  color: var(--ink-2);
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.pill.ok {
+  background: var(--good-soft);
+  color: color-mix(in srgb, var(--good) 80%, var(--ink));
+}
+
+.pill.bad {
+  background: var(--bad-soft);
+  color: color-mix(in srgb, var(--bad) 85%, var(--ink));
+}
+
+.pill.warn {
+  background: var(--warn-soft);
+  color: color-mix(in srgb, var(--warn) 85%, var(--ink));
+}
+
+.pill.neutral {
+  background: color-mix(in srgb, var(--ink-3) 14%, transparent);
+  color: var(--ink-2);
+}
+
+/* ------------------------------------------------------------------- tables
+   Wrapped so wide content scrolls inside its own box rather than pushing the page sideways. */
+.table-scroll {
+  overflow-x: auto;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+table {
+  width: 100%;
+  min-width: 34rem;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+
+thead th {
+  padding: 0.7rem 0.9rem;
+  border-bottom: 1px solid var(--rule);
+  background: var(--surface-2);
+  color: var(--ink-3);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-align: left;
+  white-space: nowrap;
+}
+
+tbody td {
+  padding: 0.7rem 0.9rem;
+  border-bottom: 1px solid var(--rule);
+  vertical-align: top;
+}
+
+tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.mono {
+  font-family: ui-monospace, 'SFMono-Regular', 'Cascadia Mono', Consolas, monospace;
+  font-size: 0.85em;
+  overflow-wrap: anywhere;
+}
+
+.muted {
+  color: var(--ink-3);
+}
+
+/* Something long and copyable: a share link, a signature, the canonical payload. */
+.copyable {
+  display: block;
+  width: 100%;
+  padding: 0.65rem 0.8rem;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  color: var(--ink-2);
+  overflow-wrap: anywhere;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}

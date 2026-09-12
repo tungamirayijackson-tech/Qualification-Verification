@@ -1,0 +1,16 @@
+apiVersion: 1
+
+providers:
+  - name: qvs
+    orgId: 1
+    folder: QVS
+    type: file
+    disableDeletion: true
+    # The files are the source of truth. Edits made in the UI are overwritten on the next
+    # reload, which is the intended behaviour: a dashboard that only exists in one person's
+    # browser is not part of the system.
+    allowUiUpdates: false
+    updateIntervalSeconds: 30
+    options:
+      path: /etc/grafana/dashboards
+      foldersFromFilesStructure: false

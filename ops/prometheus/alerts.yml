@@ -1,0 +1,73 @@
+# Alerting rules.
+#
+# Four rules, and each one is here because a human would want to be woken for it. A monitoring
+# stack that alerts on CPU and memory tells an operator that a machine is busy; these tell them
+# that something is wrong with the register.
+#
+# There is no Alertmanager in the Compose demo, so these fire and are visible in Prometheus's
+# own alerts view rather than being routed anywhere. Routing is a deployment decision and the
+# rules are the part worth reviewing.
+
+groups:
+  - name: qvs-integrity
+    rules:
+      # The one that matters most. A public verification that fails its signature, issuer or
+      # ledger check reports NOT_FOUND to the caller — deliberately, so an attacker learns
+      # nothing about how close their forgery came. This is the other half of that decision:
+      # the information is not suppressed, it is routed to the people whose job it is to act
+      # on it. If this fires, somebody presented a credential that had been altered.
+      - alert: CredentialIntegrityFailure
+        expr: increase(qvs_verifications_total{failed_check!="none"}[10m]) > 0
+        for: 0m
+        labels:
+          severity: critical
+        annotations:
+          summary: "A credential failed an integrity check ({{ $labels.failed_check }})"
+          description: >-
+            {{ $value | printf "%.0f" }} verification(s) in the last ten minutes failed the
+            {{ $labels.failed_check }} check. The caller was told NOT_FOUND. Check the audit
+            ledger for the serials involved.
+
+      # Someone working through a list of guesses. Individually indistinguishable from a
+      # mistyped link, which is why this is a rate over time rather than a single event.
+      - alert: SustainedUnknownTokens
+        expr: rate(qvs_verifications_total{verdict="NOT_FOUND",failed_check="none"}[5m]) > 1
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Sustained unknown-token verifications"
+          description: >-
+            More than one unknown token per second for ten minutes. A holder mistyping a link
+            does not look like this; enumeration does.
+
+  - name: qvs-availability
+    rules:
+      - alert: PublicVerificationSlow
+        expr: >-
+          histogram_quantile(0.95,
+            sum by (le) (rate(http_server_requests_seconds_bucket{uri=~"/public/v1/verify.*"}[5m]))
+          ) > 0.4
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Public verification p95 above the NFR-01 target"
+          description: >-
+            p95 is {{ $value | printf "%.3f" }}s against a 400 ms target. The measured figure
+            under a 50-user load stage is 77–111 ms, so this is a large regression rather than
+            a busy afternoon.
+
+      # A rate limiter running on its in-memory fallback is enforcing its budget per instance
+      # rather than per deployment, so the effective limit is multiplied by the replica count.
+      # Worth knowing before someone concludes the limit does not work.
+      - alert: RateLimiterDegraded
+        expr: increase(qvs_rate_limit_degraded_total[5m]) > 0
+        for: 0m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Rate limiter is deciding refusals locally, not in Redis"
+          description: >-
+            Redis is unreachable, so each instance is enforcing its own budget. The published
+            limit is no longer the effective one across a scaled-out deployment.

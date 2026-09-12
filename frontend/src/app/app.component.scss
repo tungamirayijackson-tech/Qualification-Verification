@@ -1,0 +1,430 @@
+/* The shell: a white masthead over a plain column for the public pages, and a deep navy
+   sidebar beside a light work area for the console, following the supplied design.
+
+   Everything here is layout and chrome; the screens themselves are styled by their own
+   components and by the shared idiom in styles.scss. */
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  padding: 0.55rem 1rem;
+  border-radius: 0 0 var(--radius-sm) 0;
+  background: var(--accent);
+  color: #ffffff;
+  font-weight: 600;
+
+  &:focus {
+    left: 0;
+    top: 0;
+    z-index: 40;
+  }
+}
+
+.shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.body {
+  flex: 1 0 auto;
+}
+
+/* --------------------------------------------------------------------- brand */
+
+.brand {
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+  color: inherit;
+  text-decoration: none;
+  border-radius: var(--radius-sm);
+}
+
+.brand-emblem {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 8px;
+  background: var(--accent);
+  color: #ffffff;
+}
+
+.brand-words {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.brand-mark {
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: 0.04em;
+}
+
+.brand-name {
+  font-size: 0.72rem;
+  color: var(--ink-3);
+}
+
+/* ------------------------------------------------------------------ masthead
+   Public pages only. The console carries its brand in the sidebar, as the design does. */
+
+.masthead {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  border-bottom: 1px solid var(--rule);
+  background: var(--surface);
+}
+
+.masthead-inner {
+  display: flex;
+  gap: 0.75rem 1.5rem;
+  align-items: center;
+  max-width: 76rem;
+  margin: 0 auto;
+  padding: 0.75rem 1.5rem;
+}
+
+.header-nav ul {
+  display: flex;
+  gap: 0.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.header-nav a {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+  padding: 0.4rem 0.8rem;
+  border-radius: var(--radius-sm);
+  color: var(--ink-3);
+  font-size: 0.9rem;
+  text-decoration: none;
+
+  &:hover {
+    background: var(--surface-2);
+    color: var(--ink);
+  }
+
+  &.current {
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-weight: 600;
+  }
+}
+
+/* -------------------------------------------------------------------- session */
+
+.session {
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+  margin-left: auto;
+  font-size: 0.85rem;
+}
+
+.who {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  padding: 0.25rem 0.7rem 0.25rem 0.3rem;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  background: var(--surface);
+}
+
+.who-avatar {
+  display: grid;
+  place-items: center;
+  width: 1.7rem;
+  height: 1.7rem;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.who-text {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.who-email {
+  max-width: 14rem;
+  overflow: hidden;
+  color: var(--ink-3);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ------------------------------------------------------------- console layout */
+
+.shell-console .body {
+  display: grid;
+  grid-template-columns: 16.5rem minmax(0, 1fr);
+  align-items: stretch;
+  min-height: 100vh;
+}
+
+.console-topbar {
+  display: none;
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  background: var(--shell);
+  color: var(--shell-ink);
+}
+
+/* Inside the navy shell the brand inverts: white wordmark, and the emblem keeps the blue so
+   it stays the one bright thing at the top of the column. */
+.brand-in-shell {
+  padding: 1.15rem 1.25rem;
+  border-bottom: 1px solid rgb(255 255 255 / 8%);
+  color: var(--shell-ink);
+
+  .brand-name {
+    color: var(--shell-ink-3);
+  }
+}
+
+.nav-scroll {
+  flex: 1 1 auto;
+  padding: 1.1rem 0.75rem;
+  overflow-y: auto;
+}
+
+.nav-group + .nav-group {
+  margin-top: 1.4rem;
+}
+
+.nav-heading {
+  margin: 0 0 0.45rem 0.75rem;
+  color: var(--shell-ink-3);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.sidebar ul {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sidebar a {
+  display: flex;
+  gap: 0.7rem;
+  align-items: flex-start;
+  padding: 0.55rem 0.75rem;
+  border-radius: var(--radius-sm);
+  color: var(--shell-ink);
+  text-decoration: none;
+
+  &:hover {
+    background: var(--shell-2);
+  }
+
+  /* The active item is a filled blue block, as in the design -- unmistakable at a glance
+     from across a desk, which a tinted background never quite is. */
+  &.current {
+    background: var(--accent);
+    color: #ffffff;
+
+    .nav-label {
+      font-weight: 600;
+    }
+
+    .nav-hint {
+      color: rgb(255 255 255 / 75%);
+    }
+  }
+}
+
+.nav-icon {
+  margin-top: 0.1rem;
+  color: currentcolor;
+}
+
+.nav-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.3;
+}
+
+.nav-label {
+  font-size: 0.9rem;
+}
+
+.nav-hint {
+  color: var(--shell-ink-3);
+  font-size: 0.74rem;
+}
+
+/* Pinned to the foot of the column. */
+.sidebar-user {
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+  padding: 0.9rem 1.25rem;
+  border-top: 1px solid rgb(255 255 255 / 8%);
+
+  .who-avatar {
+    background: var(--shell-2);
+    color: var(--shell-ink);
+  }
+
+  .button-link {
+    border-color: var(--shell-2);
+    background: var(--shell-2);
+    color: var(--shell-ink);
+
+    &:hover {
+      border-color: var(--accent);
+      background: var(--accent);
+      color: #ffffff;
+    }
+  }
+}
+
+.sidebar-user-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.25;
+}
+
+.sidebar-user-email {
+  overflow: hidden;
+  font-size: 0.82rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sidebar-user-role {
+  color: var(--shell-ink-3);
+  font-size: 0.72rem;
+}
+
+.sidebar-signout {
+  margin-left: auto;
+  padding: 0.4rem;
+  color: var(--shell-ink-3);
+
+  &:hover:not(:disabled) {
+    background: var(--shell-2);
+    color: var(--shell-ink);
+  }
+}
+
+/* ------------------------------------------------------------------- colophon */
+
+.colophon {
+  max-width: 76rem;
+  margin: 0 auto;
+  padding: 1.5rem 1.5rem 3rem;
+  border-top: 1px solid var(--rule);
+  color: var(--ink-3);
+  font-size: 0.85rem;
+
+  p {
+    display: flex;
+    gap: 0.5rem;
+    align-items: flex-start;
+    max-width: 68ch;
+    margin: 0;
+
+    app-icon {
+      margin-top: 0.15rem;
+      color: var(--accent);
+    }
+  }
+}
+
+/* ----------------------------------------------------------------- narrow view
+   The sidebar becomes a disclosure panel rather than a drawer: no overlay, no scroll
+   trapping, no focus management to get wrong. It pushes the page down, which on a phone is
+   what a menu should do. */
+
+@media (max-width: 60rem) {
+  .shell-console .body {
+    display: block;
+    min-height: 0;
+  }
+
+  .console-topbar {
+    display: flex;
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    gap: 0.75rem;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.6rem 1rem;
+    background: var(--shell);
+    color: var(--shell-ink);
+  }
+
+  .console-topbar .brand {
+    color: var(--shell-ink);
+  }
+
+  .console-topbar .menu-toggle {
+    color: var(--shell-ink);
+
+    &:hover:not(:disabled) {
+      background: var(--shell-2);
+      color: #ffffff;
+    }
+  }
+
+  .sidebar {
+    position: static;
+    display: none;
+    height: auto;
+
+    &.open {
+      display: flex;
+    }
+  }
+
+  .brand-in-shell {
+    display: none;
+  }
+}
+
+@media (max-width: 44rem) {
+  .brand-name {
+    display: none;
+  }
+
+  .who-email {
+    display: none;
+  }
+
+  .header-nav a span:not(.visually-hidden) {
+    display: none;
+  }
+
+  .header-nav a {
+    padding: 0.45rem 0.55rem;
+  }
+
+  .masthead-inner {
+    padding: 0.6rem 1rem;
+  }
+}

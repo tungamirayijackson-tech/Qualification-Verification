@@ -1,0 +1,174 @@
+<div class="page verify">
+  <div class="page-heading">
+    <app-icon name="shieldCheck" [size]="26" />
+    <h1 class="page-title">Check a qualification</h1>
+  </div>
+  <p class="page-lede">
+    Paste the link or certificate id the holder gave you. No account is needed, and this system does
+    not let anyone browse or search the register — a credential can only be checked by someone the
+    holder chose to give an id to.
+  </p>
+
+  <form class="card search-card" (ngSubmit)="check()">
+    <label class="field">
+      <span class="field-label">Certificate id</span>
+      <div class="search-row">
+        <input
+          name="token"
+          required
+          autocomplete="off"
+          placeholder="Enter the certificate id the holder gave you"
+          [(ngModel)]="enteredToken"
+          [disabled]="state() === 'checking'"
+        />
+        <button class="primary" type="submit" [disabled]="state() === 'checking' || !enteredToken">
+          <app-icon name="search" [size]="16" />
+          <span>{{ state() === 'checking' ? 'Checking' : 'Check' }}</span>
+        </button>
+      </div>
+      <span class="field-hint">Example: BXQm3hSlNWjZvuRaTsILyA</span>
+    </label>
+  </form>
+
+  @if (state() === 'failed') {
+    <p class="notice error" role="alert">{{ error() }}</p>
+  }
+
+  @if (state() === 'answered' && result(); as answer) {
+    <section role="status" aria-live="polite">
+      <!-- The answer, as its own banner above everything else. This is the one thing most
+           visitors came for, and on the design it is the first thing on the page. -->
+      <div class="verdict-banner" [class]="'verdict-banner ' + verdictClass(answer.verdict)">
+        <span class="verdict-emblem" aria-hidden="true">
+          <app-icon [name]="verdictIcon(answer.verdict)" [size]="26" />
+        </span>
+        <div class="verdict-words">
+          <p class="verdict-title">{{ verdictHeadline(answer.verdict) }}</p>
+          <p class="verdict-wording">{{ verdictWording(answer.verdict) }}</p>
+        </div>
+        <span class="pill" [class]="'pill ' + verdictClass(answer.verdict)">
+          {{ answer.verdict === 'NOT_FOUND' ? 'Not found' : answer.verdict }}
+        </span>
+      </div>
+
+      @if (answer.verdict === 'NOT_FOUND') {
+        <div class="card">
+          <p class="muted">
+            This answer is the same for a link that never existed, one that has expired, and one the
+            holder has withdrawn. That is deliberate: telling them apart would let someone probe the
+            register.
+          </p>
+        </div>
+      } @else {
+        <!-- Two columns, as in the design: what was awarded on the left, what this system did
+             about it on the right. They answer different questions and a reader looking for one
+             should not have to scroll past the other. -->
+        <div class="verdict-columns">
+          <section class="card">
+            <h2 class="card-title">Qualification details</h2>
+            <dl class="detail">
+              <dt>Qualification</dt>
+              <dd>{{ answer.qualification }}</dd>
+
+              <dt>NQF level</dt>
+              <dd>{{ answer.nqfLevel }}</dd>
+
+              <dt>Awarded by</dt>
+              <dd>{{ answer.institution }}</dd>
+
+              <dt>Awarded on</dt>
+              <dd>{{ answer.awardedOn }}</dd>
+
+              <dt>Holder</dt>
+              <dd>
+                {{ answer.holderInitials }}
+                <span class="field-hint">
+                  Initials only. Enough to match against a CV you were given, not enough to collect.
+                </span>
+              </dd>
+
+              @if (answer.verdict === 'REVOKED') {
+                <dt>Withdrawn</dt>
+                <dd>
+                  {{ answer.revokedReason }} ·
+                  {{ answer.revokedAt | date: 'longDate' }}
+                </dd>
+              }
+            </dl>
+          </section>
+
+          <section class="card">
+            <h2 class="card-title">Verification details</h2>
+            <dl class="detail">
+              <dt>Checked</dt>
+              <dd>{{ answer.verifiedAt | date: 'medium' }}</dd>
+
+              <dt>Method</dt>
+              <dd>Detached signature (Ed25519)</dd>
+
+              @if (answer.ledgerSeq) {
+                <dt>Audit reference</dt>
+                <dd class="mono">#{{ answer.ledgerSeq }}</dd>
+              }
+            </dl>
+
+            <h3 class="checks-title">What was checked</h3>
+            <ul class="checks">
+              @for (check of checkLabels; track check.key) {
+                <li>
+                  <app-icon
+                    class="check-mark"
+                    [class]="
+                      outcomeOf(answer, check.key) === 'PASS' ? 'check-mark ok' : 'check-mark bad'
+                    "
+                    [name]="outcomeOf(answer, check.key) === 'PASS' ? 'checkCircle' : 'xCircle'"
+                    [size]="17"
+                  />
+                  <span>{{ check.label }}</span>
+                  <span
+                    class="pill"
+                    [class]="outcomeOf(answer, check.key) === 'PASS' ? 'pill ok' : 'pill bad'"
+                  >
+                    {{ outcomeOf(answer, check.key) === 'PASS' ? 'Pass' : 'Fail' }}
+                  </span>
+                </li>
+              }
+            </ul>
+
+            @if (answer.verdict === 'REVOKED') {
+              <p class="muted revoked-note">
+                The signature still verifies, and that is not a contradiction. The institution did
+                confer this award, and it later withdrew it. Both facts are true, and the register
+                records both.
+              </p>
+            }
+          </section>
+        </div>
+      }
+
+      <div class="card report-card">
+        <div class="actions">
+          <a class="button-link primary" [href]="reportUrl()">
+            <app-icon name="download" [size]="16" />
+            <span>Download signed report</span>
+          </a>
+          <button type="button" (click)="startOver()">
+            <app-icon name="search" [size]="16" />
+            <span>New check</span>
+          </button>
+        </div>
+        <p class="field-hint">
+          The report is a PDF stating this verdict, when it was checked and its audit reference,
+          signed by this system so it can be shown to somebody who does not take your word for it.
+          Downloading runs the check again, so it carries its own timestamp and its own audit
+          reference — which is what makes it evidence of a check rather than a screenshot.
+        </p>
+        <p class="field-hint">
+          Quote the audit reference if this check is ever disputed. This system does not decide
+          whether a qualification is real — it reports that a named institution signed a statement,
+          and whether that statement has since been withdrawn.
+        </p>
+      </div>
+    </section>
+  }
+</div>

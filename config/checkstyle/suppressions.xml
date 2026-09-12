@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<!DOCTYPE suppressions PUBLIC
+    "-//Checkstyle//DTD SuppressionFilter Configuration 1.2//EN"
+    "https://checkstyle.org/dtds/suppressions_1_2.dtd">
+
+<!--
+  Every suppression here is narrow, targeted at a file pattern, and carries the reason.
+  A blanket suppression would make the whole standard decorative; the point of writing them
+  down is that a reviewer can challenge one.
+-->
+<suppressions>
+
+  <!--
+    The Spring Boot entry point holds only a static main, so Checkstyle classifies it as a
+    utility class. It is not: Spring registers it as a configuration bean and instantiates
+    it, so adding the private constructor the rule wants would break application startup.
+  -->
+  <suppress files="QvsApplication\.java" checks="HideUtilityClassConstructor"/>
+
+  <!--
+    ArchUnit derives each test's displayed name from its @ArchTest field name, so the rules
+    are named `domainIsFrameworkFree` rather than `DOMAIN_IS_FRAMEWORK_FREE`. Renaming them
+    to satisfy ConstantName would make the build output read like shouting and would make the
+    architecture failures harder to interpret, which defeats the purpose of having them.
+    The class is all-static for the same reason.
+  -->
+  <suppress files="architecture" checks="ConstantName"/>
+  <suppress files="architecture" checks="HideUtilityClassConstructor"/>
+
+  <!--
+    A @Bean factory method in a module's wiring class exists to list a use case's
+    dependencies, exactly as its constructor does. ParameterNumber already exempts
+    constructors for that reason; these methods are the same pattern wearing a different hat.
+    Scoped to *ModuleConfiguration so ordinary methods stay covered.
+  -->
+  <suppress files="ModuleConfiguration\.java" checks="ParameterNumber"/>
+
+</suppressions>

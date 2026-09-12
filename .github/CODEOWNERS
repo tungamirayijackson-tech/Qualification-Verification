@@ -1,0 +1,30 @@
+# Review routing (S16). Each module has one owner, and reviews are cyclic --
+# A reviews D, B reviews A, C reviews B, D reviews C -- so no two members can
+# approve each other's work reciprocally.
+#
+# TODO(team): replace the placeholders with real GitHub handles before the first PR.
+
+# Member D -- platform, CI/CD, security. Reviewed by C.
+/.github/                                   @member-d
+/Dockerfile                                 @member-d
+/docker-compose.yml                         @member-d
+/config/                                    @member-d
+/build.gradle.kts                           @member-d
+/settings.gradle.kts                        @member-d
+/backend/build.gradle.kts                   @member-d
+/backend/src/main/java/zw/ac/qvs/identity/  @member-d
+
+# Member A -- registration and search. Reviewed by D.
+/backend/src/main/java/zw/ac/qvs/credential/ @member-a
+
+# Member B -- signing and verification. Reviewed by A.
+/backend/src/main/java/zw/ac/qvs/verification/ @member-b
+
+# Member C -- ledger and audit. Reviewed by B.
+/backend/src/main/java/zw/ac/qvs/ledger/    @member-c
+
+# Shared kernel: two approvals, because a change here touches everyone.
+/backend/src/main/java/zw/ac/qvs/shared/    @member-b @member-d
+
+# The requirement register is the contract. Changing it changes what the build enforces.
+/docs/requirements.md                       @member-a @member-b @member-c @member-d

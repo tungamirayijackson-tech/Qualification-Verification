@@ -1,0 +1,21 @@
+.git
+.github
+docs
+*.pdf
+*.md
+
+# Build output: the image builds from source in its own stages. Copying a host build in
+# would make the image depend on whatever the last local run happened to produce.
+build
+*/build
+bin
+*/bin
+dist
+*/dist
+.gradle
+.angular
+*/.angular
+
+# Dependencies are resolved inside the build stages, against the lockfile.
+node_modules
+*/node_modules

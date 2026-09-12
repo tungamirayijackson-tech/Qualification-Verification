@@ -1,0 +1,150 @@
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.sub {
+  margin: 0.35rem 0 0;
+  max-width: 62ch;
+  color: var(--ink-3);
+}
+
+.admit-lede {
+  margin: -0.5rem 0 1.25rem;
+  max-width: 70ch;
+  font-size: 0.9rem;
+}
+
+.admit-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: 0 1.25rem;
+}
+
+/* The password is shown once and never again, so it is given the weight of an announcement
+   rather than a line of body text. `user-select: all` means one click selects the whole thing,
+   for the person who would rather not trust the clipboard button. */
+.password-card {
+  border-color: color-mix(in srgb, var(--good) 35%, transparent);
+  background: var(--good-soft);
+
+  .card-title {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    color: color-mix(in srgb, var(--good) 80%, var(--ink));
+  }
+
+  .muted {
+    max-width: 70ch;
+  }
+}
+
+.the-password {
+  margin: 1rem 0;
+  padding: 0.9rem 1.1rem;
+  border: 1px solid color-mix(in srgb, var(--good) 30%, transparent);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  font-size: 1.1rem;
+  letter-spacing: 0.02em;
+  user-select: all;
+}
+
+.filter-field {
+  max-width: 30rem;
+  margin: 1.5rem 0;
+}
+
+.filter-box {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  padding-left: 0.75rem;
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--ink-3);
+
+  &:focus-within {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent);
+  }
+
+  input {
+    flex: 1 1 auto;
+    padding-left: 0;
+    border: 0;
+    background: none;
+
+    &:focus {
+      outline: none;
+      box-shadow: none;
+    }
+  }
+}
+
+.state {
+  padding: 2rem 0;
+  color: var(--ink-3);
+}
+
+.state.error {
+  color: var(--bad);
+
+  button {
+    margin-top: 0.75rem;
+  }
+}
+
+/* A disabled account keeps its row -- an auditor still needs to see that it existed. */
+tr.lapsed td {
+  color: var(--ink-3);
+}
+
+.table-caption {
+  margin: 0.75rem 0 0;
+  font-size: 0.85rem;
+}
+
+/* The confirmation, in the same place the password card appears -- the one column an
+   administrator is already reading down. It is a panel rather than a browser dialog because
+   what it has to say does not fit in one, and because a native confirm() cannot be styled,
+   cannot be tested, and looks like something the page did not mean to do. */
+.confirm-card {
+  border-color: color-mix(in srgb, var(--warn) 40%, transparent);
+  background: var(--warn-soft);
+
+  .card-title {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  .muted {
+    max-width: 68ch;
+  }
+}
+
+.who {
+  margin: 0.35rem 0 0.6rem;
+  color: var(--ink-2);
+  font-size: 0.9rem;
+}
+
+/* Buttons rather than a menu. There are at most three, they are all one word, and a menu would
+   hide the destructive one behind a click that reveals nothing about what is inside it. */
+.row-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  white-space: nowrap;
+
+  button {
+    padding: 0.3rem 0.6rem;
+    font-size: 0.8rem;
+  }
+}

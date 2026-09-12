@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FindBugsFilter>
+  <!-- Spring injects into these; EI_EXPOSE_REP on framework-managed beans is noise. -->
+  <Match>
+    <Class name="~.*Controller"/>
+    <Bug pattern="EI_EXPOSE_REP,EI_EXPOSE_REP2"/>
+  </Match>
+  <Match>
+    <Class name="~.*Configuration"/>
+    <Bug pattern="EI_EXPOSE_REP,EI_EXPOSE_REP2"/>
+  </Match>
+  <!-- Generated sources. Kept free of backslashes: SpotBugs compiles this as a Java
+       regex after XML parsing, and a path-separator character class fails to compile there. -->
+  <Match>
+    <Source name="~.*generated.*"/>
+  </Match>
+
+  <!--
+    CSRF protection is disabled deliberately, and only here.
+
+    CSRF is an attack on *ambient* credentials: the browser attaches a cookie to a
+    cross-site request without the page asking it to. This API is stateless and
+    bearer-token authenticated — there is no session cookie, and an access token is
+    attached explicitly by the client, so a cross-site form post carries no credentials
+    at all. Leaving Spring's CSRF filter enabled would break every client while
+    protecting nothing.
+
+    The threshold at which this stops being true is worth naming: the moment any
+    credential is stored in a cookie the browser sends automatically, this exclusion
+    must be removed and the filter re-enabled.
+  -->
+  <Match>
+    <Class name="zw.ac.qvs.shared.adapter.SecurityConfiguration"/>
+    <Bug pattern="SPRING_CSRF_PROTECTION_DISABLED"/>
+  </Match>
+
+</FindBugsFilter>

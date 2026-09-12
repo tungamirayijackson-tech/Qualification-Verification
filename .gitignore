@@ -1,0 +1,53 @@
+# build output
+build/
+bin/
+out/
+target/
+dist/
+
+# gradle
+.gradle/
+!gradle/wrapper/gradle-wrapper.jar
+
+# node
+node_modules/
+.angular/
+npm-debug.log*
+
+# ide
+.idea/
+*.iml
+.vscode/
+.settings/
+.classpath
+.project
+
+# local run logs
+.app.log
+.web.log
+
+# the local key vault: private signing material, never committed
+.vault/
+
+# os
+.DS_Store
+Thumbs.db
+
+# secrets: nothing in this repo, ever (S09). gitleaks enforces it in CI.
+*.env
+.env.*
+!.env.example
+*.pem
+*.p12
+*.jks
+secrets/
+
+# Terraform. State files hold every value that passed through a variable, secrets included,
+# in plaintext -- a committed .tfstate is a committed key. The lock file is the exception and
+# is tracked deliberately: it is what pins provider versions for everybody.
+infra/terraform/.terraform/
+infra/terraform/*.tfstate
+infra/terraform/*.tfstate.*
+infra/terraform/*.tfvars
+!infra/terraform/*.tfvars.example
+infra/terraform/crash.log
