@@ -33,6 +33,10 @@ npm-debug.log*
 .DS_Store
 Thumbs.db
 
+# a clone of this repository nested inside the working tree, e.g. from an accidental
+# `git clone` into the project folder. It must never be committed back into itself.
+Qualification-Verification/
+
 # secrets: nothing in this repo, ever (S09). gitleaks enforces it in CI.
 *.env
 .env.*
