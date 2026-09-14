@@ -1,0 +1,87 @@
+# Production deployment stack for the Qualification Verification System.
+#
+# Lean by design: the API, PostgreSQL and Redis, and nothing else — no Prometheus, Grafana or
+# dev seeder. The API is served on port 80 directly, so the system is reachable with no reverse
+# proxy. Every container has a hard memory ceiling, which matters on a small or shared host: an
+# unbounded JVM is how one service starves another.
+#
+# Usage:
+#   1. Copy .env.example to .env in this directory and fill in every value (see the README).
+#   2. docker compose -f docker-compose.prod.yml up -d
+#
+# The image is expected to be built and available locally (or pulled from a registry) as the tag
+# named by QVS_IMAGE.
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: qvs
+      POSTGRES_USER: qvs
+      POSTGRES_PASSWORD: ${QVS_DB_PASSWORD:?set QVS_DB_PASSWORD in .env}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    # Loopback only: the database is reached over the compose network by service name and must
+    # never be exposed to the internet.
+    ports:
+      - "127.0.0.1:5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U qvs -d qvs"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    mem_limit: 256m
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: ["redis-server", "--save", "", "--maxmemory", "48mb", "--maxmemory-policy", "allkeys-lru"]
+    ports:
+      - "127.0.0.1:6380:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    mem_limit: 64m
+
+  api:
+    image: ${QVS_IMAGE:-qvs-api:local}
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      QVS_DB_URL: jdbc:postgresql://postgres:5432/qvs
+      QVS_DB_USER: qvs
+      QVS_DB_PASSWORD: ${QVS_DB_PASSWORD:?set QVS_DB_PASSWORD in .env}
+      QVS_REDIS_HOST: redis
+      QVS_REDIS_PORT: 6379
+      QVS_VAULT_DIR: /vault
+      QVS_FIELD_KEY: ${QVS_FIELD_KEY:?set QVS_FIELD_KEY in .env}
+      QVS_NATIONAL_ID_SALT: ${QVS_NATIONAL_ID_SALT:?set QVS_NATIONAL_ID_SALT in .env}
+      QVS_IP_SALT: ${QVS_IP_SALT:?set QVS_IP_SALT in .env}
+      QVS_JWT_SECRET: ${QVS_JWT_SECRET:?set QVS_JWT_SECRET in .env}
+      # The first administrator, created once into an empty register. Optional on a running
+      # system — the application ignores these once any account exists.
+      QVS_BOOTSTRAP_ADMIN_EMAIL: ${QVS_BOOTSTRAP_ADMIN_EMAIL:-}
+      QVS_BOOTSTRAP_ADMIN_PASSWORD: ${QVS_BOOTSTRAP_ADMIN_PASSWORD:-}
+      # Actuator on its own port, bound to loopback below, so metrics and JVM internals are not
+      # exposed on the public port.
+      MANAGEMENT_SERVER_PORT: 9090
+      # Hold the heap under the container limit, leaving room for metaspace, threads and direct
+      # buffers. Serial GC keeps the footprint small on a constrained host.
+      JAVA_TOOL_OPTIONS: "-XX:MaxRAMPercentage=60 -XX:+ExitOnOutOfMemoryError -XX:+UseSerialGC"
+    ports:
+      - "80:8080"
+      - "127.0.0.1:9090:9090"
+    volumes:
+      - vault:/vault
+    mem_limit: 600m
+
+volumes:
+  pgdata:
+  vault:
