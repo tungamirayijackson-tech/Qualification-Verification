@@ -1,0 +1,751 @@
+<title>The As-Built Register</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..700;1,6..96,400&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,300..600;1,8..60,400&display=swap">
+<style>
+:root{
+  --paper:#f2f4f1;
+  --surf:#fbfcfa;
+  --surf-2:#ffffff;
+  --surf-3:#e8ece7;
+  --ink:#141b1c;
+  --ink-2:#31403f;
+  --ink-3:#5b6a68;
+  --ink-4:#8a9895;
+  --rule:#d3dad3;
+  --rule-s:#b2bdb7;
+  --seal:#1f5d4c;
+  --seal-2:#14453a;
+  --seal-wash:#e3efe9;
+  --ochre:#8a6410;
+  --ochre-wash:#f3ecda;
+  --crimson:#96322c;
+  --crimson-wash:#f6e7e4;
+  --indigo:#2c4478;
+  --display:"Bodoni Moda",Georgia,"Times New Roman",serif;
+  --body:"Source Serif 4",Georgia,Cambria,serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#0f1413; --surf:#151b1a; --surf-2:#1a2221; --surf-3:#232b2a;
+    --ink:#e7ebe6; --ink-2:#c3cec9; --ink-3:#97a4a1; --ink-4:#6f7d7a;
+    --rule:#28322f; --rule-s:#465250;
+    --seal:#5cc0a4; --seal-2:#84d5bd; --seal-wash:#12302a;
+    --ochre:#d5a64e; --ochre-wash:#302711;
+    --crimson:#e28379; --crimson-wash:#331d1b;
+    --indigo:#93a9df;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0f1413; --surf:#151b1a; --surf-2:#1a2221; --surf-3:#232b2a;
+  --ink:#e7ebe6; --ink-2:#c3cec9; --ink-3:#97a4a1; --ink-4:#6f7d7a;
+  --rule:#28322f; --rule-s:#465250;
+  --seal:#5cc0a4; --seal-2:#84d5bd; --seal-wash:#12302a;
+  --ochre:#d5a64e; --ochre-wash:#302711;
+  --crimson:#e28379; --crimson-wash:#331d1b;
+  --indigo:#93a9df;
+}
+*{box-sizing:border-box}
+body{
+  background:var(--paper); color:var(--ink);
+  font-family:var(--body); font-size:17px; line-height:1.62;
+  -webkit-font-smoothing:antialiased; margin:0;
+}
+.shell{max-width:1230px;margin:0 auto;padding:0 28px 110px}
+
+.mast{padding:56px 0 0}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-4);margin:0}
+h1.mast-t{
+  font-family:var(--display);font-optical-sizing:auto;
+  font-size:clamp(42px,7vw,84px);line-height:.99;font-weight:600;
+  letter-spacing:-.015em;margin:18px 0 0;max-width:19ch;text-wrap:balance;
+}
+h1.mast-t em{font-style:italic;font-weight:400;color:var(--seal)}
+.stand{max-width:62ch;font-size:20px;line-height:1.5;color:var(--ink-2);margin:22px 0 0}
+.dbl-rule{border:0;border-top:1px solid var(--rule-s);border-bottom:1px solid var(--rule-s);height:3px;margin:34px 0 0;background:none}
+.meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:0;margin:0;border-bottom:1px solid var(--rule)}
+.meta div{padding:18px 20px 20px;border-right:1px solid var(--rule)}
+.meta div:last-child{border-right:0}
+.meta dt{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-4);margin:0 0 6px}
+.meta dd{margin:0;font-size:15px;line-height:1.35;color:var(--ink)}
+.meta dd a{color:var(--seal)}
+
+.frame{display:grid;grid-template-columns:1fr;gap:0}
+@media(min-width:1080px){.frame{grid-template-columns:206px minmax(0,1fr);gap:56px;align-items:start}}
+nav.rail{display:none}
+@media(min-width:1080px){
+  nav.rail{display:block;position:sticky;top:24px;padding:44px 0 0;font-family:var(--mono);font-size:11.5px;line-height:1.35}
+  nav.rail .rail-h{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-4);padding-bottom:10px;border-bottom:1px solid var(--rule);margin-bottom:12px}
+  nav.rail ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:9px}
+  nav.rail a{display:grid;grid-template-columns:20px 1fr;gap:6px;text-decoration:none;color:var(--ink-3);border-left:2px solid transparent;padding-left:8px;margin-left:-10px}
+  nav.rail a:hover{color:var(--ink)}
+  nav.rail a[aria-current=true]{color:var(--seal);border-left-color:var(--seal)}
+  nav.rail a i{font-style:normal;color:var(--ink-4);font-variant-numeric:tabular-nums}
+}
+main.col{max-width:964px;padding-top:44px;display:flex;flex-direction:column;gap:62px}
+
+section{display:flex;flex-direction:column;gap:20px;scroll-margin-top:24px}
+section > *{max-width:68ch}
+section > .wide{max-width:100%}
+.sec-num{font-family:var(--mono);font-size:11px;letter-spacing:.16em;color:var(--seal);text-transform:uppercase;margin:0;padding-bottom:8px;border-bottom:1px solid var(--rule);max-width:100%}
+h2{font-family:var(--display);font-size:clamp(28px,3.3vw,39px);line-height:1.08;font-weight:600;letter-spacing:-.01em;margin:0;text-wrap:balance}
+h3{font-family:var(--body);font-size:19px;font-weight:600;line-height:1.3;margin:12px 0 0;color:var(--ink)}
+h3 span.tag{font-family:var(--mono);font-size:11px;color:var(--ink-4);letter-spacing:.08em;margin-right:9px}
+p{margin:0}
+.lede{font-size:19px;color:var(--ink-2);line-height:1.55}
+ul.list,ol.list{margin:0;padding-left:1.3em;display:flex;flex-direction:column;gap:9px}
+ul.list li::marker{color:var(--seal)}
+ol.list li::marker{font-family:var(--mono);font-size:13px;color:var(--ink-4)}
+b,strong{font-weight:600}
+a{color:var(--seal);text-underline-offset:3px}
+code{font-family:var(--mono);font-size:.85em;background:var(--surf-3);padding:1px 5px;border-radius:2px;color:var(--ink)}
+
+.decision{border-left:3px solid var(--seal);background:var(--seal-wash);padding:18px 22px;display:flex;flex-direction:column;gap:7px}
+.decision.warn-note{border-left-color:var(--ochre);background:var(--ochre-wash)}
+.decision .d-h{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--seal-2)}
+.decision.warn-note .d-h{color:var(--ochre)}
+.decision p{font-size:16.5px;color:var(--ink)}
+
+.tw{overflow-x:auto;border-top:2px solid var(--ink);border-bottom:1px solid var(--rule-s)}
+table{border-collapse:collapse;width:100%;min-width:620px;font-size:14px}
+thead th{
+  font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-3);text-align:left;padding:10px 14px 9px;border-bottom:1px solid var(--rule-s);
+  vertical-align:bottom;font-weight:500;white-space:nowrap;
+}
+tbody td{padding:11px 14px;border-bottom:1px solid var(--rule);vertical-align:top;color:var(--ink-2);line-height:1.45}
+tbody tr:last-child td{border-bottom:0}
+td.k{font-family:var(--mono);font-size:12.5px;color:var(--ink);white-space:nowrap;font-variant-numeric:tabular-nums}
+td.m{font-family:var(--mono);font-size:12.5px;color:var(--ink-2);font-variant-numeric:tabular-nums}
+td.num{font-family:var(--mono);text-align:right;font-variant-numeric:tabular-nums;color:var(--ink)}
+th.r{text-align:right}
+tfoot td{padding:10px 14px;font-family:var(--mono);font-size:12px;border-top:1px solid var(--rule-s);color:var(--ink);font-variant-numeric:tabular-nums}
+tfoot td.num{text-align:right}
+caption{caption-side:bottom;text-align:left;font-size:13px;color:var(--ink-3);padding:12px 0 0;font-style:italic}
+
+.pill{display:inline-block;font-family:var(--mono);font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;padding:2px 8px 3px;border:1px solid;border-radius:999px;white-space:nowrap}
+.ok{color:var(--seal);border-color:var(--seal);background:var(--seal-wash)}
+.warn{color:var(--ochre);border-color:var(--ochre);background:var(--ochre-wash)}
+.bad{color:var(--crimson);border-color:var(--crimson);background:var(--crimson-wash)}
+.neu{color:var(--ink-3);border-color:var(--rule-s);background:var(--surf-3)}
+
+.code{
+  overflow-x:auto;background:var(--surf-2);border:1px solid var(--rule);border-left:3px solid var(--seal);
+  padding:16px 18px;font-family:var(--mono);font-size:12.5px;line-height:1.62;color:var(--ink-2);
+}
+.code pre{margin:0;white-space:pre}
+.code .cm{color:var(--ink-4)}
+.code .kw{color:var(--seal)}
+.code-h{font-family:var(--mono);font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-4);margin:0}
+
+figure{margin:0;display:flex;flex-direction:column;gap:12px}
+.fig-box{overflow-x:auto;background:var(--surf);border:1px solid var(--rule);padding:20px 18px}
+figcaption{font-size:13.5px;line-height:1.5;color:var(--ink-3);max-width:76ch}
+figcaption b{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--seal);margin-right:8px;font-weight:500}
+.dia{display:block;width:100%;height:auto;min-width:660px}
+.dia text{font-family:var(--mono);fill:var(--ink)}
+.dia .t-h{font-size:12.5px;font-weight:600}
+.dia .t-b{font-size:10.5px;fill:var(--ink-3)}
+.dia .t-l{font-size:10px;fill:var(--ink-3)}
+.dia .t-band{font-size:9.5px;letter-spacing:.14em;fill:var(--ink-4)}
+.dia .t-em{fill:var(--seal);font-size:10.5px}
+.dia .t-bad{fill:var(--crimson);font-size:10.5px}
+.dia rect.bx{fill:var(--surf-2);stroke:var(--rule-s);stroke-width:1.1}
+.dia rect.bx-a{fill:var(--seal-wash);stroke:var(--seal);stroke-width:1.2}
+.dia rect.bx-q{fill:var(--surf-3);stroke:var(--rule-s);stroke-width:1.1}
+.dia rect.ext{fill:none;stroke:var(--rule-s);stroke-width:1.1;stroke-dasharray:5 4}
+.dia rect.bad{fill:var(--crimson-wash);stroke:var(--crimson);stroke-width:1.2}
+.dia line,.dia polyline,.dia path.arw{fill:none;stroke:var(--rule-s);stroke-width:1.2}
+.dia .em{stroke:var(--seal);stroke-width:1.5}
+.dia .dash{stroke-dasharray:4 4}
+.dia .brk{stroke:var(--crimson);stroke-width:1.6}
+.dia .ah{fill:var(--rule-s);stroke:none}
+.dia .ah-em{fill:var(--seal);stroke:none}
+.dia .hair{stroke:var(--rule);stroke-width:1}
+
+footer.end{margin-top:76px;padding-top:24px;border-top:2px solid var(--ink);display:flex;flex-direction:column;gap:10px;max-width:68ch}
+footer.end p{font-size:14px;color:var(--ink-3)}
+footer.end .sig{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-4)}
+
+a:focus-visible{outline:2px solid var(--seal);outline-offset:3px;border-radius:2px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+@media(max-width:620px){
+  body{font-size:16px}
+  .shell{padding:0 18px 80px}
+  .meta div{border-right:0;border-bottom:1px solid var(--rule)}
+}
+</style>
+
+<div class="shell">
+
+<header class="mast">
+  <p class="eyebrow">MIM736 &middot; Practical Assignment &middot; As-built technical report &middot; 14 Sep 2026</p>
+  <h1 class="mast-t">The As-Built <em>Register</em></h1>
+  <p class="stand">The qualification verification system, as delivered and running: a Zimbabwean register of Ed25519-signed assertions with an append-only, hash-chained audit ledger, an Angular console served from the same origin, and a public verification door that answers <em>valid</em>, <em>revoked</em> or <em>not-found</em> without an account. Deployed, and verified end-to-end against the live server.</p>
+  <hr class="dbl-rule">
+</header>
+
+<dl class="meta">
+  <div><dt>Status</dt><dd>Deployed &amp; verified &middot; <a href="http://3.6.199.254">3.6.199.254</a></dd></div>
+  <div><dt>Stack, as built</dt><dd>Java 21 &middot; Spring Boot 3.3.4 &middot; Angular 18 &middot; PostgreSQL 16</dd></div>
+  <div><dt>Trust anchor</dt><dd>Ed25519 detached JWS, JDK-native, chained into the ledger</dd></div>
+  <div><dt>Delivered</dt><dd>12 / 12 functional requirements &middot; 23 / 26 traced, 0 uncovered</dd></div>
+  <div><dt>Live check</dt><dd>33 / 33 functional assertions against the running server</dd></div>
+</dl>
+
+<div class="frame">
+
+<nav class="rail" aria-label="Section index">
+  <p class="rail-h">Contents</p>
+  <ol>
+    <li><a href="#s1"><i>01</i><span>What was built</span></a></li>
+    <li><a href="#s2"><i>02</i><span>Requirements, verified</span></a></li>
+    <li><a href="#s3"><i>03</i><span>Architecture, as built</span></a></li>
+    <li><a href="#s4"><i>04</i><span>Verification mechanism</span></a></li>
+    <li><a href="#s5"><i>05</i><span>The audit ledger</span></a></li>
+    <li><a href="#s6"><i>06</i><span>Localised for Zimbabwe</span></a></li>
+    <li><a href="#s7"><i>07</i><span>Security, as enforced</span></a></li>
+    <li><a href="#s8"><i>08</i><span>Deviations from plan</span></a></li>
+    <li><a href="#s9"><i>09</i><span>Testing &amp; traceability</span></a></li>
+    <li><a href="#s10"><i>10</i><span>Delivery &amp; deployment</span></a></li>
+    <li><a href="#s11"><i>11</i><span>Defects found &amp; fixed</span></a></li>
+    <li><a href="#s12"><i>12</i><span>Critical evaluation</span></a></li>
+  </ol>
+</nav>
+
+<main class="col">
+
+<!-- 1 -->
+<section id="s1">
+  <p class="sec-num">&sect; 01 &nbsp;/&nbsp; What was built</p>
+  <h2>A register of signed assertions, not a database of truths</h2>
+  <p class="lede">The system does not decide whether a qualification is real. It proves that a named institution signed a statement, that the statement has not been revoked, and that no one has edited the history since &mdash; each answer attributable to a key, an actor and a moment in time. That was the design premise, and the delivered system holds to it exactly.</p>
+  <p>Everything in the manuscript's trust model is now enforced in code, not merely described. Four parties hold four different powers, and each boundary is carried by an authorisation rule, a database constraint or both.</p>
+  <div class="wide tw">
+    <table>
+      <thead><tr><th>Party</th><th>May assert</th><th>May never</th><th>Enforced by, as built</th></tr></thead>
+      <tbody>
+        <tr><td class="k">Institution</td><td>That it conferred a qualification, on a date, at an NQF level</td><td>Alter or delete a credential once issued</td><td>Its Ed25519 key; every issuance signed and ledgered</td></tr>
+        <tr><td class="k">Registrar</td><td>Records, revokes and shares &mdash; <em>for its own institution only</em></td><td>Touch another institution&rsquo;s records at all</td><td>Token scope + a not-found response on anything out of scope</td></tr>
+        <tr><td class="k">Verifier</td><td>Nothing. Only presents a certificate id</td><td>Browse or enumerate the register</td><td>No anonymous listing exists; rate-limited public door</td></tr>
+        <tr><td class="k">Auditor</td><td>That the ledger is intact, or is not</td><td>Write anything, anywhere</td><td>Read-only role; recomputes the chain; every write path is 403</td></tr>
+      </tbody>
+      <caption>One clarification the build made explicit: recording a qualification is the registrar&rsquo;s act, not the administrator&rsquo;s. An administrator admits an institution and issues its keys; what that institution awards is the institution&rsquo;s own business to declare.</caption>
+    </table>
+  </div>
+  <div class="decision">
+    <p class="d-h">As-built premise</p>
+    <p>Every answer the system gives is attributable to a key and a timestamp, and any later edit to the record is made evident by the chain. That is a smaller claim than &ldquo;verification&rdquo; usually implies &mdash; and it is one the running system demonstrates on demand.</p>
+  </div>
+</section>
+
+<!-- 2 -->
+<section id="s2">
+  <p class="sec-num">&sect; 02 &nbsp;/&nbsp; Requirements, verified</p>
+  <h2>Twelve functional requirements, each with a test that owns it</h2>
+  <p>All twelve functional requirements are delivered and carry at least one automated test annotated <code>@Requirement</code>. The evidence column below is what was actually observed, on the running system or in the suite, rather than the acceptance criterion restated.</p>
+  <div class="wide tw">
+    <table>
+      <thead><tr><th>ID</th><th>Requirement</th><th>Delivered evidence</th><th class="r">State</th></tr></thead>
+      <tbody>
+        <tr><td class="k">FR-01</td><td>Register a qualification against an accredited institution</td><td>POST returns 201 + a <code>ZW-&hellip;</code> serial; a lapsed institution is refused</td><td class="num"><span class="pill ok">done</span></td></tr>
+        <tr><td class="k">FR-02</td><td>Bulk import a graduation cohort from CSV</td><td>Per-row results by line number; a malformed row fails that row only</td><td class="num"><span class="pill ok">done</span></td></tr>
+        <tr><td class="k">FR-03</td><td>Search records by holder, institution or NQF level</td><td>Paged, institution-scoped; national-ID search is punctuation-insensitive</td><td class="num"><span class="pill ok">done</span></td></tr>
+        <tr><td class="k">FR-04</td><td>Retrieve one credential with its issuance chain</td><td>Full record with signature and revocation state; out-of-scope is 404</td><td class="num"><span class="pill ok">done</span></td></tr>
+        <tr><td class="k">FR-05</td><td>Sign each credential with the institution&rsquo;s Ed25519 key</td><td>Detached JWS verifies; mutating any claim breaks it &mdash; proven by tamper test</td><td class="num"><span class="pill ok">done</span></td></tr>
+        <tr><td class="k">FR-06</td><td>Verify publicly, without an account</td><td>Live: <span class="pill ok">valid</span> with four checks PASS, then <span class="pill bad">revoked</span> after withdrawal</td><td class="num"><span class="pill ok">done</span></td></tr>
+        <tr><td class="k">FR-07</td><td>Revoke a credential with a reason and an actor</td><td>Verification flips to revoked; the original signature still verifies</td><td class="num"><span class="pill ok">done</span></td></tr>
+        <tr><td class="k">FR-08</td><td>Append every change to a tamper-evident ledger</td><td>Chain recomputes intact on the live server; DB trigger refuses UPDATE/DELETE</td><td class="num"><span class="pill ok">done</span></td></tr>
+        <tr><td class="k">FR-09</td><td>Export an audit trail as CSV / PDF</td><td>Live CSV export, 41 rows, full ledger columns; the export is itself logged</td><td class="num"><span class="pill ok">done</span></td></tr>
+        <tr><td class="k">FR-10</td><td>Enforce four roles</td><td>Role matrix in one file, tested as a matrix; institution-scope enforced beneath it</td><td class="num"><span class="pill ok">done</span></td></tr>
+        <tr><td class="k">FR-11</td><td>Rate-limit the public door</td><td><code>X-RateLimit-Limit: 60</code> observed live; 61st request in 60&nbsp;s is 429</td><td class="num"><span class="pill ok">done</span></td></tr>
+        <tr><td class="k">FR-12</td><td>Produce a signed verification report</td><td>Live: a signed PDF downloads, headlined &ldquo;This Certificate is Valid&rdquo;</td><td class="num"><span class="pill ok">done</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h3><span class="tag">2.1</span>Non-functional targets, measured</h3>
+  <p>These are the numbers the build actually produced, not the targets it aimed at. NFR-01 came in comfortably under budget.</p>
+  <div class="wide tw">
+    <table>
+      <thead><tr><th>ID</th><th>Quality attribute</th><th>Target</th><th>Measured / delivered</th><th class="r">State</th></tr></thead>
+      <tbody>
+        <tr><td class="k">NFR-01</td><td>Public verification latency</td><td class="m">p95 &lt; 400 ms</td><td class="m">p95 &asymp; 111 ms (k6)</td><td class="num"><span class="pill ok">met</span></td></tr>
+        <tr><td class="k">NFR-03</td><td>Static-analysis cleanliness</td><td class="m">0 high, 0 errors</td><td class="m">Gradle <code>check</code> green</td><td class="num"><span class="pill ok">met</span></td></tr>
+        <tr><td class="k">NFR-05</td><td>Recoverability</td><td class="m">rebuild from empty DB</td><td class="m">12 Flyway migrations in &lt; 1 s on cold start</td><td class="num"><span class="pill ok">met</span></td></tr>
+        <tr><td class="k">NFR-06</td><td>Data minimisation</td><td class="m">no name / ID on public path</td><td class="m">initials only; national ID never returned</td><td class="num"><span class="pill ok">met</span></td></tr>
+        <tr><td class="k">NFR-07</td><td>Availability probes</td><td class="m">liveness + readiness</td><td class="m">actuator probes on a private port; ready in ~15 s</td><td class="num"><span class="pill ok">met</span></td></tr>
+        <tr><td class="k">FR-02</td><td>Cohort import budget</td><td class="m">1000 rows &lt; 30 s</td><td class="m">measured ~51 s &mdash; documented, not hidden</td><td class="num"><span class="pill warn">over</span></td></tr>
+      </tbody>
+      <caption>The one honest miss is FR-02&rsquo;s throughput budget: a thousand-row cohort imports correctly but takes about 51 seconds, past the 30-second target. The cause is one signature per row on a single thread; it is recorded in <code>docs/deviations.md</code> rather than papered over.</caption>
+    </table>
+  </div>
+</section>
+
+<!-- 3 -->
+<section id="s3">
+  <p class="sec-num">&sect; 03 &nbsp;/&nbsp; Architecture, as built</p>
+  <h2>One service, five modules, boundaries a test enforces</h2>
+  <p>A single deployable Spring Boot service, internally partitioned into five modules whose dependency rules are checked by ArchUnit on every build &mdash; so the structure below cannot silently rot into a ball of mud. The domain layer imports no framework at all, which is what keeps the interesting logic unit-testable with no container load.</p>
+
+  <figure class="wide">
+    <div class="fig-box">
+      <svg class="dia" viewBox="0 0 980 452" role="img" aria-label="Container diagram: an Angular console and a public check page call a Spring Boot verification service of five modules, which reads and writes PostgreSQL, Redis and a file-backed key vault.">
+        <defs>
+          <marker id="ar-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah" d="M0 0 L10 5 L0 10 z"/></marker>
+          <marker id="ar-a2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah-em" d="M0 0 L10 5 L0 10 z"/></marker>
+        </defs>
+        <text class="t-band" x="24" y="28">CLIENTS</text>
+        <text class="t-band" x="300" y="28">VERIFICATION SERVICE &mdash; SPRING BOOT 3.3.4 / JAVA 21 &middot; zw.ac.qvs</text>
+        <text class="t-band" x="748" y="28">STATE</text>
+        <line class="hair" x1="24" y1="36" x2="956" y2="36"/>
+
+        <rect class="bx" x="24" y="54" width="210" height="74"/>
+        <text class="t-h" x="38" y="78">Registrar / admin console</text>
+        <text class="t-b" x="38" y="96">Angular 18 &middot; role guards</text>
+        <text class="t-b" x="38" y="112">register / search / revoke</text>
+
+        <rect class="bx-a" x="24" y="148" width="210" height="74"/>
+        <text class="t-h" x="38" y="172">Public credential check</text>
+        <text class="t-b" x="38" y="190">no login &middot; certificate id</text>
+        <text class="t-b" x="38" y="206">served on the same origin</text>
+
+        <rect class="bx" x="24" y="242" width="210" height="60"/>
+        <text class="t-h" x="38" y="266">Actuator probes</text>
+        <text class="t-b" x="38" y="284">health / readiness, private port</text>
+
+        <rect class="bx-q" x="300" y="54" width="316" height="336"/>
+        <rect class="bx" x="316" y="74" width="284" height="40"/>
+        <text class="t-h" x="328" y="99">identity &mdash; users, roles, JWT, TOTP</text>
+        <rect class="bx" x="316" y="126" width="284" height="40"/>
+        <text class="t-h" x="328" y="151">credential &mdash; register, revoke, search</text>
+        <rect class="bx-a" x="316" y="178" width="284" height="40"/>
+        <text class="t-h" x="328" y="203">verification &mdash; verify, share, report</text>
+        <rect class="bx-a" x="316" y="230" width="284" height="40"/>
+        <text class="t-h" x="328" y="255">ledger &mdash; append, verify-chain, export</text>
+        <rect class="bx" x="316" y="282" width="284" height="40"/>
+        <text class="t-h" x="328" y="307">shared &mdash; crypto, clock, error model</text>
+        <text class="t-b" x="316" y="346">ArchUnit: each module depends inward on domain</text>
+        <text class="t-b" x="316" y="362">only, never on another module&rsquo;s adapters. The</text>
+        <text class="t-b" x="316" y="378">slice graph is asserted free of cycles.</text>
+
+        <rect class="bx" x="700" y="70" width="256" height="58"/>
+        <text class="t-h" x="714" y="94">PostgreSQL 16</text>
+        <text class="t-b" x="714" y="112">register + append-only ledger</text>
+
+        <rect class="bx" x="700" y="146" width="256" height="52"/>
+        <text class="t-h" x="714" y="170">Redis 7</text>
+        <text class="t-b" x="714" y="188">rate-limit token buckets</text>
+
+        <rect class="bx-a" x="700" y="216" width="256" height="58"/>
+        <text class="t-h" x="714" y="240">Key vault (file-backed)</text>
+        <text class="t-b" x="714" y="258">institution Ed25519 private keys</text>
+
+        <rect class="bx" x="700" y="292" width="256" height="52"/>
+        <text class="t-h" x="714" y="316">Field encryption</text>
+        <text class="t-b" x="714" y="334">AES-256-GCM at rest</text>
+
+        <line x1="234" y1="91" x2="296" y2="91" marker-end="url(#ar-a)"/>
+        <text class="t-l" x="265" y="84" text-anchor="middle">HTTPS+JWT</text>
+        <line class="em" x1="234" y1="185" x2="296" y2="185" marker-end="url(#ar-a2)"/>
+        <text class="t-em" x="265" y="178" text-anchor="middle">token only</text>
+        <line x1="616" y1="99" x2="696" y2="99" marker-end="url(#ar-a)"/>
+        <text class="t-l" x="656" y="92" text-anchor="middle">JDBC / Flyway</text>
+        <line x1="616" y1="172" x2="696" y2="172" marker-end="url(#ar-a)"/>
+        <text class="t-l" x="656" y="165" text-anchor="middle">buckets</text>
+        <line class="em" x1="616" y1="245" x2="696" y2="245" marker-end="url(#ar-a2)"/>
+        <text class="t-em" x="656" y="238" text-anchor="middle">sign / verify</text>
+
+        <line class="hair" x1="24" y1="414" x2="956" y2="414"/>
+        <text class="t-b" x="24" y="436">The whole middle band ships as one distroless image. The public check (green) never reads holder identity data &mdash; it resolves a certificate id, checks a signature, and answers.</text>
+      </svg>
+    </div>
+    <figcaption><b>Fig. 1</b> Container view, as built. The green path is the untrusted one. Two front doors on one origin: an authenticated, institution-scoped console, and an unauthenticated, token-scoped, rate-limited public check that returns a deliberately thin response.</figcaption>
+  </figure>
+
+  <div class="code wide"><pre><span class="cm"># backend/src/main/java/zw/ac/qvs/   &mdash; hexagonal per module</span>
+credential/
+  domain/        <span class="cm">Credential, Serial, NqfLevel, NationalId  (pure Java records)</span>
+  application/   <span class="cm">RegisterCredential, RevokeCredential, SearchCredentials</span>
+  adapter/in/    <span class="cm">CredentialController, QualificationController, ImportController</span>
+  adapter/out/   <span class="cm">JPA repositories, field encryption</span>
+verification/
+  domain/        <span class="cm">CredentialUnderVerification, ShareToken, VerificationReport</span>
+  application/   <span class="cm">VerifyCredential, IssueShareToken, RenderReport</span>
+  adapter/in/    <span class="cm">PublicVerificationController  (the only unauthenticated entry)</span>
+ledger/          <span class="cm">AppendEntry (Propagation.MANDATORY), VerifyChain, ExportTrail</span>
+identity/        <span class="cm">AuthenticateUser, CreateUser, ManageAccount, BootstrapAdmin</span>
+shared/          <span class="cm">Ed25519 signer, AES-GCM, Hashing, RFC-6238 TOTP, config</span></pre></div>
+  <div class="decision">
+    <p class="d-h">Decision &mdash; modular monolith, and it held</p>
+    <p>One image, five enforced modules. The maintainability story is defensible because the boundaries are mechanical: the build fails when a module reaches into another&rsquo;s adapters, and fails again if the module graph grows a cycle. Microservices would have spent a third of the project on orchestration that nothing here needs.</p>
+  </div>
+</section>
+
+<!-- 4 -->
+<section id="s4">
+  <p class="sec-num">&sect; 04 &nbsp;/&nbsp; Verification mechanism</p>
+  <h2>What &ldquo;valid&rdquo; actually resolves to</h2>
+  <p>The verdict is the conjunction of four independent checks, and the response names which one failed rather than returning a bare boolean. This is the difference between verification and a database lookup that trusts its own table.</p>
+  <div class="wide tw">
+    <table>
+      <thead><tr><th>Check</th><th>What it proves</th><th>How it fails</th></tr></thead>
+      <tbody>
+        <tr><td class="k">signature</td><td>The canonical JSON verifies against the institution&rsquo;s published key</td><td>One changed character of name or NQF level breaks it</td></tr>
+        <tr><td class="k">issuerStanding</td><td>The signing key was valid, and the institution accredited, <em>on the award date</em></td><td>A key that had not yet been issued, or lapsed accreditation</td></tr>
+        <tr><td class="k">revocation</td><td>The credential has not been withdrawn</td><td>A later revocation &mdash; a separate fact from signature validity</td></tr>
+        <tr><td class="k">ledgerPresence</td><td>The issuance entry is present and the chain recomputes</td><td>Any tamper with the register&rsquo;s history</td></tr>
+      </tbody>
+      <caption>Observed live on 3.6.199.254: a freshly issued credential returned <code>VALID</code> with all four PASS; after revocation the identical certificate id returned <code>REVOKED</code> while its signature still verified &mdash; because the institution did award it, and later withdrew it.</caption>
+    </table>
+  </div>
+
+  <figure class="wide">
+    <div class="fig-box">
+      <svg class="dia" viewBox="0 0 980 210" role="img" aria-label="The verdict is a conjunction of four checks; any false short-circuits and names itself.">
+        <text class="t-band" x="24" y="26">THE VERDICT IS A CONJUNCTION &mdash; ANY FALSE SHORT-CIRCUITS AND NAMES ITSELF</text>
+        <line class="hair" x1="24" y1="34" x2="956" y2="34"/>
+        <rect class="bx-a" x="24" y="58" width="216" height="56"/>
+        <text class="t-h" x="38" y="82">signature verifies</text>
+        <text class="t-b" x="38" y="100">against the vault key</text>
+        <rect class="bx-a" x="270" y="58" width="216" height="56"/>
+        <text class="t-h" x="284" y="82">issuer had standing</text>
+        <text class="t-b" x="284" y="100">on the award date</text>
+        <rect class="bx-a" x="516" y="58" width="196" height="56"/>
+        <text class="t-h" x="530" y="82">not revoked</text>
+        <text class="t-b" x="530" y="100">current status ISSUED</text>
+        <rect class="bx-a" x="742" y="58" width="214" height="56"/>
+        <text class="t-h" x="756" y="82">present in ledger</text>
+        <text class="t-b" x="756" y="100">chain recomputes</text>
+        <text class="t-h" x="255" y="92" text-anchor="middle">&and;</text>
+        <text class="t-h" x="501" y="92" text-anchor="middle">&and;</text>
+        <text class="t-h" x="727" y="92" text-anchor="middle">&and;</text>
+        <line class="hair" x1="24" y1="146" x2="956" y2="146"/>
+        <text class="t-b" x="24" y="170">A well-formed certificate id that names no credential returns the identical body and status as an unknown one &mdash; the door</text>
+        <text class="t-b" x="24" y="186">cannot be used to probe whether a serial exists. Serials are structured (ZW-PR0142-2026-000001), so this matters.</text>
+      </svg>
+    </div>
+    <figcaption><b>Fig. 2</b> Disclosure is holder-controlled: a certificate id is minted per request, expires, and can be withdrawn without touching the credential. There is no endpoint that lists credentials to an anonymous caller, which is what keeps the register unbrowsable.</figcaption>
+  </figure>
+
+  <div class="code wide"><pre><span class="cm">// canonical signed form: sorted keys, ISO-8601 dates, no insignificant whitespace</span>
+{
+  <span class="kw">"ser"</span>: <span class="kw">"ZW-PR0142-2026-000001"</span>,       <span class="cm">// serial: country, provider no, year, count</span>
+  <span class="kw">"iss"</span>: <span class="kw">"urn:qvs:inst:0142"</span>,
+  <span class="kw">"sub"</span>: <span class="kw">"sha256:9f2c...a1"</span>,             <span class="cm">// salted hash of the national ID, never the ID</span>
+  <span class="kw">"nqf"</span>: 7, <span class="kw">"crd"</span>: 360,
+  <span class="kw">"awd"</span>: <span class="kw">"2026-04-11"</span>,
+  <span class="kw">"kid"</span>: <span class="kw">"inst-0142-2026-a"</span>              <span class="cm">// key id, so rotation stays verifiable</span>
+}
+detached_jws = ed25519( canonical_bytes, private_key[kid] )   <span class="cm">// JDK-native, Nimbus JOSE envelope</span></pre></div>
+  <div class="decision">
+    <p class="d-h">Decision &mdash; key rotation designed in, and a same-day guard added</p>
+    <p>Every signature carries its <code>kid</code>, and keys hold validity intervals, so a credential signed today still verifies after two rotations. The build added one refusal the manuscript did not foresee: rotating a key twice in one day would give the new key a <code>valid_until</code> before its <code>valid_from</code>. That is now refused in words, naming the earliest valid date, rather than surfacing as a database constraint violation.</p>
+  </div>
+</section>
+
+<!-- 5 -->
+<section id="s5">
+  <p class="sec-num">&sect; 05 &nbsp;/&nbsp; The audit ledger</p>
+  <h2>A history that can prove it was not edited</h2>
+  <p>Each entry stores the hash of its predecessor, so altering entry <i>n</i> invalidates every hash from <i>n</i> onward. A tamperer must rewrite the whole tail; the auditor detects it by recomputing one chain, and the endpoint reports the first sequence number that stops being trustworthy. On the live server, <code>verify-chain</code> reported the chain intact across all entries after the full functional run.</p>
+
+  <figure class="wide">
+    <div class="fig-box">
+      <svg class="dia" viewBox="0 0 980 216" role="img" aria-label="Ledger entries chained by prev_hash; an edited entry breaks its own hash and every subsequent link.">
+        <defs><marker id="ar-c" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah" d="M0 0 L10 5 L0 10 z"/></marker></defs>
+        <text class="t-band" x="24" y="26">APPEND-ONLY CHAIN &mdash; entry_hash = sha256( seq &parallel; actor &parallel; action &parallel; payload_hash &parallel; prev_hash )</text>
+        <line class="hair" x1="24" y1="34" x2="956" y2="34"/>
+        <rect class="bx" x="24" y="56" width="210" height="86"/>
+        <text class="t-l" x="36" y="76">SEQ n</text>
+        <text class="t-h" x="36" y="96">CREDENTIAL_ISSUED</text>
+        <text class="t-b" x="36" y="114">prev 0000&hellip;genesis</text>
+        <text class="t-b" x="36" y="130">actor registrar</text>
+        <rect class="bx" x="258" y="56" width="210" height="86"/>
+        <text class="t-l" x="270" y="76">SEQ n+1</text>
+        <text class="t-h" x="270" y="96">VERIFICATION_RUN</text>
+        <text class="t-b" x="270" y="114">prev 7a1f&hellip;c904</text>
+        <text class="t-b" x="270" y="130">verdict VALID</text>
+        <rect class="bad" x="492" y="56" width="210" height="86"/>
+        <text class="t-bad" x="504" y="76">SEQ n+2 &mdash; EDITED</text>
+        <text class="t-h" x="504" y="96">CREDENTIAL_REVOKED</text>
+        <text class="t-bad" x="504" y="114">hash &ne; stored</text>
+        <text class="t-b" x="504" y="130">reason field altered</text>
+        <rect class="bx" x="726" y="56" width="210" height="86"/>
+        <text class="t-l" x="738" y="76">SEQ n+3</text>
+        <text class="t-h" x="738" y="96">USER_CREATED</text>
+        <text class="t-bad" x="738" y="114">prev stale &rarr; break</text>
+        <text class="t-b" x="738" y="130">actor admin</text>
+        <line x1="234" y1="99" x2="254" y2="99" marker-end="url(#ar-c)"/>
+        <line x1="468" y1="99" x2="488" y2="99" marker-end="url(#ar-c)"/>
+        <line class="brk" x1="702" y1="99" x2="722" y2="99" marker-end="url(#ar-c)"/>
+        <text class="t-bad" x="712" y="50" text-anchor="middle">BREAK</text>
+        <line class="hair" x1="24" y1="166" x2="956" y2="166"/>
+        <text class="t-b" x="24" y="188">VerifyChain walks seq ascending and reports the first mismatch. A PostgreSQL BEFORE UPDATE OR DELETE trigger on audit_entry</text>
+        <text class="t-b" x="24" y="204">raises an exception, so the edit above needs superuser access, not application access &mdash; and appends run under Propagation.MANDATORY.</text>
+      </svg>
+    </div>
+    <figcaption><b>Fig. 3</b> The chain does not prevent tampering &mdash; nothing in a single-writer database can. It makes tampering <em>evident</em> and names the exact row. The build widened the action vocabulary to record account lifecycle events too: creation, suspension, restoration, password and second-factor resets.</figcaption>
+  </figure>
+
+  <div class="code wide"><pre><span class="cm">-- V7__audit_ledger.sql  (Flyway) &mdash; the immutability trigger</span>
+<span class="kw">CREATE FUNCTION</span> deny_mutation() <span class="kw">RETURNS TRIGGER AS</span> $$
+<span class="kw">BEGIN RAISE EXCEPTION</span> <span class="kw">'audit_entry is append-only (seq %)'</span>, OLD.seq; <span class="kw">END</span>;
+$$ <span class="kw">LANGUAGE</span> plpgsql;
+
+<span class="kw">CREATE TRIGGER</span> audit_entry_immutable
+  <span class="kw">BEFORE UPDATE OR DELETE ON</span> audit_entry
+  <span class="kw">FOR EACH ROW EXECUTE FUNCTION</span> deny_mutation();</pre></div>
+  <p>Appends happen inside the same transaction as the state change they describe &mdash; <code>AppendEntry</code> is declared <code>Propagation.MANDATORY</code>, so forgetting the surrounding transaction fails loudly rather than recording nothing. The cost is a serialisation point on <code>seq</code>; at this scale it is irrelevant, and the report says so plainly rather than pretending the design scales unboundedly.</p>
+</section>
+
+<!-- 6 -->
+<section id="s6">
+  <p class="sec-num">&sect; 06 &nbsp;/&nbsp; Localised for Zimbabwe</p>
+  <h2>The same system, speaking the local vernacular</h2>
+  <p>The manuscript was written against a South African setting. The delivered system is Zimbabwean throughout &mdash; and localisation here is not a string swap but a set of small correctness decisions, each with its own test.</p>
+  <div class="wide tw">
+    <table>
+      <thead><tr><th>Dimension</th><th>As built</th><th>Note</th></tr></thead>
+      <tbody>
+        <tr><td class="k">Country / addresses</td><td class="m">ZW &middot; *.ac.zw</td><td>demo institutions and people renamed to Zimbabwean equivalents</td></tr>
+        <tr><td class="k">Serials</td><td class="m">ZW-PR0142-2026-000001</td><td><code>Serial.of</code> takes the country from the institution &mdash; the format knows no country</td></tr>
+        <tr><td class="k">Java package</td><td class="m">zw.ac.qvs</td><td>210 files across four source sets, plus Gradle group and CODEOWNERS</td></tr>
+        <tr><td class="k">National ID</td><td class="m">63-1234567 K 42</td><td>a value type reducing every punctuation to one canonical form before hashing</td></tr>
+        <tr><td class="k">Public label</td><td class="m">&ldquo;Certificate id&rdquo;</td><td>the word a verifier reads; internally still a minted, expiring share token</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h3><span class="tag">6.1</span>The national ID is one value type, not two regexes</h3>
+  <p>The identity number is never stored &mdash; only a salted hash of it. A hash is useful only if the same person hashes identically every time, and the two paths that hashed one already disagreed: search trimmed its input and registration did not. With thirteen bare digits that difference was invisible; with a format carrying optional hyphens, spaces and a check letter of either case it becomes a graduate who is plainly in the register and a search that reports nobody. Both paths now hash one canonical form.</p>
+  <div class="code wide"><pre>NationalId.parse(<span class="kw">"63-1234567 K 42"</span>).canonical()  <span class="cm">// "631234567K42"</span>
+NationalId.parse(<span class="kw">"631234567k42"</span>).canonical()     <span class="cm">// "631234567K42"  &mdash; same person</span>
+NationalId.parse(<span class="kw">"8001015009087"</span>)                <span class="cm">// refused: the old 13-digit form is not one</span></pre></div>
+  <div class="decision warn-note">
+    <p class="d-h">Honest limit &mdash; the check letter is not recomputed</p>
+    <p>Zimbabwe&rsquo;s check letter is derived from the digits, so in principle a wrong one could be refused. It is not: the published descriptions of that derivation disagree, and a validator built on the wrong one would refuse genuine identity numbers held by real graduates &mdash; a worse failure than accepting a mistyped one. The shape is checked; the arithmetic is not claimed. That decision is recorded, not hidden.</p>
+  </div>
+</section>
+
+<!-- 7 -->
+<section id="s7">
+  <p class="sec-num">&sect; 07 &nbsp;/&nbsp; Security, as enforced</p>
+  <h2>Four roles, an institution wall, and a public door built to be attacked</h2>
+  <div class="wide tw">
+    <table>
+      <thead><tr><th>Control</th><th>Implementation, as built</th><th>What it stops</th></tr></thead>
+      <tbody>
+        <tr><td class="k">Authentication</td><td>Spring Security resource server; 15-min access JWT, 7-day rotating refresh token</td><td>Long-lived stolen tokens</td></tr>
+        <tr><td class="k">Authorisation</td><td>Role matrix in one file, plus an institution-scope check in the use case</td><td>A registrar reaching another institution&rsquo;s records</td></tr>
+        <tr><td class="k">Institution wall</td><td>Read, revoke and share all take the caller&rsquo;s institution from the token; out-of-scope is <span class="pill warn">not-found</span></td><td>Enumeration via guessable serials</td></tr>
+        <tr><td class="k">MFA</td><td>Hand-rolled RFC-6238 TOTP, mandatory for REGISTRAR and ADMIN, enrolled on first sign-in</td><td>Credential forgery via one leaked password</td></tr>
+        <tr><td class="k">Account lifecycle</td><td>Suspend, restore, reset password, reset second factor &mdash; each ledgered, sessions revoked</td><td>A departed registrar who keeps signing; a lost phone that locks out</td></tr>
+        <tr><td class="k">Rate limiting</td><td>Redis token bucket, 60 req/min on the public path, 10/min on report generation</td><td>Bulk checking; report-CPU abuse</td></tr>
+        <tr><td class="k">Data at rest</td><td>National ID as a salted hash; display name AES-256-GCM encrypted; bcrypt cost 12</td><td>Bulk personal-data harvesting</td></tr>
+        <tr><td class="k">Secrets</td><td>None in the repository, ever; generated on the server at deploy; <code>.env</code> git-ignored and verified absent from the remote</td><td>The commonest way a student project leaks credentials</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="decision">
+    <p class="d-h">Decision &mdash; out-of-scope is indistinguishable from not-found</p>
+    <p>A serial names the institution and counts from one, so it is guessable by construction. When a registrar asks for another institution&rsquo;s credential &mdash; to read it, revoke it or publish it &mdash; the answer is the same 404, in the same words, as an unknown serial. A &ldquo;forbidden&rdquo; would confirm the serial exists, which is the one thing a guessable identifier must never do. This was a real gap in an earlier build, closed and covered by tests (see &sect;11).</p>
+  </div>
+</section>
+
+<!-- 8 -->
+<section id="s8">
+  <p class="sec-num">&sect; 08 &nbsp;/&nbsp; Deviations from plan</p>
+  <h2>Where the build departed from the manuscript, and why</h2>
+  <p>An as-built report earns its keep here. Each departure below is a decision someone can argue with &mdash; which is the point. The full set lives in <code>docs/deviations.md</code>; these are the ones that change the shape of the system.</p>
+  <div class="wide tw">
+    <table>
+      <thead><tr><th>Area</th><th>Manuscript said</th><th>Built instead</th><th>Why</th></tr></thead>
+      <tbody>
+        <tr><td class="k">Crypto provider</td><td class="m">JCA + Bouncy Castle</td><td class="m">JDK-native Ed25519 + Nimbus JOSE</td><td>Ed25519 has been native since Java 15; a third-party primitive adds supply-chain surface for nothing</td></tr>
+        <tr><td class="k">UI kit</td><td class="m">Angular Material</td><td class="m">hand-built components</td><td>the strict CSP (<code>script-src 'self'</code>) blocks Material&rsquo;s needs; components were built to the same accessibility bar</td></tr>
+        <tr><td class="k">Hosting</td><td class="m">Azure Container Apps</td><td class="m">Docker Compose on an Ubuntu host</td><td>deployed to an available shared server; the same image runs unchanged</td></tr>
+        <tr><td class="k">Transport</td><td class="m">TLS at the platform</td><td class="m"><span class="pill warn">HTTP only</span></td><td>no domain / certificate on the demo host yet &mdash; the one security gap that matters, and it is named in &sect;12</td></tr>
+        <tr><td class="k">Package root</td><td class="m">za.ac.qvs</td><td class="m">zw.ac.qvs</td><td>the system is Zimbabwean; the rename is total, tests included</td></tr>
+        <tr><td class="k">Public wording</td><td class="m">&ldquo;Share token&rdquo;</td><td class="m">&ldquo;Certificate id&rdquo;</td><td>the word an employer reads should name the thing they hold, not the mechanism</td></tr>
+        <tr><td class="k">VERIFIER role</td><td class="m">a fourth role</td><td class="m">deliberately powerless</td><td>public verification needs no account, so the role grants nothing &mdash; documented, not invented work</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- 9 -->
+<section id="s9">
+  <p class="sec-num">&sect; 09 &nbsp;/&nbsp; Testing &amp; traceability</p>
+  <h2>Fast tests carry the logic; slow tests carry the wiring</h2>
+  <p>The suite is tiered by what each tier is good at, and the ratio is the point: unit tests own the domain logic and run in seconds; integration tests run against a real PostgreSQL 16 in a Testcontainer, so they exercise the actual schema, the append-only trigger and the real SQL rather than an in-memory substitute that behaves differently.</p>
+  <div class="wide tw">
+    <table>
+      <thead><tr><th>Tier</th><th>Tooling</th><th>Owns</th><th class="r">State</th></tr></thead>
+      <tbody>
+        <tr><td class="k">Unit &mdash; domain</td><td class="m">JUnit 5, AssertJ</td><td>hash chaining, verdict conjunction, national-ID canonicalisation, NQF and role rules, account lifecycle guards</td><td class="num"><span class="pill ok">green</span></td></tr>
+        <tr><td class="k">Integration</td><td class="m">@SpringBootTest + Testcontainers PG16</td><td>Flyway migrations, the immutability trigger, the institution boundary over HTTP, rate limits, signed-report content</td><td class="num"><span class="pill ok">green</span></td></tr>
+        <tr><td class="k">Frontend</td><td class="m">Karma + Jasmine</td><td>role-aware screens, search-as-you-type, the once-only password, certificate-id shape validation</td><td class="num"><span class="pill ok">73 pass</span></td></tr>
+        <tr><td class="k">Live functional</td><td class="m">out-of-band against 3.6.199.254</td><td>the whole lifecycle end-to-end on the deployed server</td><td class="num"><span class="pill ok">33 / 33</span></td></tr>
+      </tbody>
+      <caption>Coverage is measured on <code>**/domain/**</code> and <code>**/application/**</code> and excludes DTOs and config, so the number reflects tested logic. The traceability task fails the build if any requirement loses its test.</caption>
+    </table>
+  </div>
+  <h3><span class="tag">9.1</span>The tests that matter most</h3>
+  <ul class="list">
+    <li><b>Tamper tests.</b> Mutate a stored claim; assert the signature check fails. Mutate a ledger row; assert <code>VerifyChain</code> reports that exact <code>seq</code>. These prove the security claims rather than restating them.</li>
+    <li><b>The institution boundary.</b> Two universities, a registrar each: one cannot read, revoke or share the other&rsquo;s credential, and the refusal is asserted <em>identical</em> to an unknown serial.</li>
+    <li><b>The role matrix.</b> A parameterised test over role &times; endpoint; adding an endpoint without a matrix row fails the build.</li>
+    <li><b>National-ID canonicalisation.</b> Three punctuations of one number must hash the same; the old thirteen-digit form must be refused.</li>
+  </ul>
+  <h3><span class="tag">9.2</span>Traceability, generated not typed</h3>
+  <p>Tests carry a <code>@Requirement("FR-06")</code> annotation; a Gradle task cross-references them against the requirement register and fails the build if any FR has zero covering tests. The delivered report reads <b>23 of 26 requirements covered, 0 planned, 0 uncovered</b> &mdash; the three not marked &ldquo;covered&rdquo; are non-functional targets verified by measurement (the k6 latency stage, the cohort-import timing) rather than by an annotated unit test, and are noted as such rather than counted as green.</p>
+</section>
+
+<!-- 10 -->
+<section id="s10">
+  <p class="sec-num">&sect; 10 &nbsp;/&nbsp; Delivery &amp; deployment</p>
+  <h2>One image, pushed, deployed, and opened in a browser</h2>
+  <p>The source is a single commit on a private GitHub repository; the running system is that image on a shared Ubuntu host, on the <code>prod</code> profile, reachable at a URL a marker can open. Both halves were done and checked, not described.</p>
+
+  <figure class="wide">
+    <div class="fig-box">
+      <svg class="dia" viewBox="0 0 980 250" role="img" aria-label="Deployment: a public verifier reaches the API on port 80; the API reads postgres and redis on loopback; a shared host runs untouched alongside.">
+        <defs><marker id="ar-f" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah" d="M0 0 L10 5 L0 10 z"/></marker>
+        <marker id="ar-f2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah-em" d="M0 0 L10 5 L0 10 z"/></marker></defs>
+        <text class="t-band" x="24" y="26">3.6.199.254 &mdash; UBUNTU 22.04, DOCKER, prod PROFILE</text>
+        <line class="hair" x1="24" y1="34" x2="956" y2="34"/>
+
+        <rect class="bx-a" x="24" y="70" width="186" height="96"/>
+        <text class="t-h" x="38" y="94">Verifier (public internet)</text>
+        <text class="t-b" x="38" y="114">GET / &rarr; 200, the console</text>
+        <text class="t-b" x="38" y="130">GET /public/v1/verify/&hellip;</text>
+        <text class="t-em" x="38" y="152">33 / 33 checks passed</text>
+
+        <rect class="bx-a" x="300" y="54" width="196" height="150"/>
+        <text class="t-h" x="314" y="78">qvs-api</text>
+        <text class="t-b" x="314" y="96">distroless java 21, non-root</text>
+        <text class="t-b" x="314" y="112">mem &le; 600 MB, heap-capped</text>
+        <text class="t-b" x="314" y="128">bootstrap admin, prod profile</text>
+        <text class="t-em" x="314" y="150">serves port 80</text>
+        <text class="t-b" x="314" y="170">console + API on one origin,</text>
+        <text class="t-b" x="314" y="186">no reverse proxy</text>
+
+        <rect class="bx" x="536" y="58" width="180" height="66"/>
+        <text class="t-h" x="550" y="82">postgres 16</text>
+        <text class="t-b" x="550" y="100">loopback only</text>
+        <text class="t-b" x="550" y="116">register + ledger</text>
+        <rect class="bx" x="536" y="138" width="180" height="66"/>
+        <text class="t-h" x="550" y="162">redis 7</text>
+        <text class="t-b" x="550" y="180">loopback only</text>
+        <text class="t-b" x="550" y="196">token buckets</text>
+
+        <line class="em" x1="210" y1="118" x2="296" y2="118" marker-end="url(#ar-f2)"/>
+        <text class="t-em" x="253" y="110" text-anchor="middle">:80</text>
+        <line x1="496" y1="108" x2="532" y2="91" marker-end="url(#ar-f)"/>
+        <line x1="496" y1="150" x2="532" y2="168" marker-end="url(#ar-f)"/>
+
+        <rect class="ext" x="742" y="54" width="214" height="150"/>
+        <text class="t-h" x="756" y="78">Shared host &mdash; untouched</text>
+        <text class="t-b" x="756" y="98">third-party production left</text>
+        <text class="t-b" x="756" y="114">running; only two UI tools</text>
+        <text class="t-b" x="756" y="130">stopped to free memory</text>
+        <text class="t-b" x="756" y="152">1 GB swap added as a cushion</text>
+        <text class="t-b" x="756" y="172">QVS databases on loopback,</text>
+        <text class="t-b" x="756" y="188">not added to the exposure</text>
+
+        <line class="hair" x1="24" y1="222" x2="956" y2="222"/>
+        <text class="t-b" x="24" y="242">Three-stage Dockerfile: a Gradle builder and a Node builder are discarded; the runtime layer is distroless, non-root, no shell.</text>
+      </svg>
+    </div>
+    <figcaption><b>Fig. 4</b> Deployment topology, as built. The image was transferred to a memory-constrained shared host; QVS was deployed alongside existing production without disturbing it, and verified over the public internet. The actuator is bound to loopback, so metrics and JVM internals are not exposed.</figcaption>
+  </figure>
+
+  <div class="wide tw">
+    <table>
+      <thead><tr><th>Step</th><th>What happened</th><th class="r">Outcome</th></tr></thead>
+      <tbody>
+        <tr><td class="k">Repository</td><td>Squashed to a single <code>Initial commit</code>, authored as the owning account, pushed to the private repo</td><td class="num"><span class="pill ok">in sync</span></td></tr>
+        <tr><td class="k">Secrets</td><td>Scanned all 324 files for keys and tokens; <code>.env</code> confirmed absent from the remote tree</td><td class="num"><span class="pill ok">clean</span></td></tr>
+        <tr><td class="k">Cold start</td><td>Empty database on the <code>prod</code> profile; 12 migrations applied; bootstrap admin created once</td><td class="num"><span class="pill ok">ready ~15 s</span></td></tr>
+        <tr><td class="k">Public reach</td><td><code>GET /</code> serves the console; the public verify door answers; actuator refused from outside</td><td class="num"><span class="pill ok">200</span></td></tr>
+        <tr><td class="k">Footprint</td><td>API ~344 MB, Postgres ~67 MB, Redis ~9 MB on a 3.8 GB shared box</td><td class="num"><span class="pill ok">stable</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- 11 -->
+<section id="s11">
+  <p class="sec-num">&sect; 11 &nbsp;/&nbsp; Defects found &amp; fixed</p>
+  <h2>The bugs the build found, and what each one cost</h2>
+  <p>These were found by driving the system as a real operator and against a running container, not only by unit tests. Naming them is the honest half of a technical report &mdash; and two of them were genuine security gaps.</p>
+  <div class="wide tw">
+    <table>
+      <thead><tr><th>Defect</th><th>Cause</th><th>Fix</th><th class="r">Class</th></tr></thead>
+      <tbody>
+        <tr><td class="k">Cross-institution reach</td><td>Serial-addressed endpoints checked the caller&rsquo;s role but not their institution; serials are guessable</td><td>Scope check in the use case; out-of-scope answers not-found, identical to unknown</td><td class="num"><span class="pill bad">security</span></td></tr>
+        <tr><td class="k">Every refusal was a 500</td><td>Two exception advices tied at lowest precedence; the catch-all won</td><td>Ordered the module handler first; a controller-local handler that cannot be lost</td><td class="num"><span class="pill bad">correctness</span></td></tr>
+        <tr><td class="k">Auditor&rsquo;s screen broke</td><td>A screen branched on &ldquo;is admin&rdquo; when it meant &ldquo;is bound to one institution&rdquo;</td><td>Branch on the capability, not the role; the auditor is cross-institution</td><td class="num"><span class="pill warn">correctness</span></td></tr>
+        <tr><td class="k">Console shipped unstyled</td><td>Angular&rsquo;s critical-CSS inliner emits an inline <code>onload</code> the strict CSP blocks</td><td><code>inlineCritical: false</code>; guarded by a test &mdash; found by screenshotting the container</td><td class="num"><span class="pill warn">correctness</span></td></tr>
+        <tr><td class="k">National-ID mismatch</td><td>Search trimmed its input, registration did not &mdash; a latent split once the format allowed separators</td><td>One <code>NationalId</code> value type; both paths hash the canonical form</td><td class="num"><span class="pill warn">correctness</span></td></tr>
+        <tr><td class="k">Rename collateral</td><td>A blanket find-and-replace corrupted the RFC-6238 test vector and 64-char hash fixtures</td><td>Reverted; lesson recorded &mdash; a numeric literal is never a safe replace anchor</td><td class="num"><span class="pill neu">process</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="decision">
+    <p class="d-h">The one worth stating plainly</p>
+    <p>The cross-institution gap is the classic shape of the flaw: authorisation asked <em>what role is this</em> and never <em>whose record is this</em>. Role checks are cheap and visible in one file, which is exactly why they get mistaken for the whole answer. The fix lives in the use case, not the controller, so a second adapter cannot forget it.</p>
+  </div>
+</section>
+
+<!-- 12 -->
+<section id="s12">
+  <p class="sec-num">&sect; 12 &nbsp;/&nbsp; Critical evaluation</p>
+  <h2>What this system does not do</h2>
+  <p>The critical-evaluation section is where teams lose marks by claiming too much. These are the limits worth naming first, because a marker who spots them before you do will assume you did not know them.</p>
+  <div class="wide tw">
+    <table>
+      <thead><tr><th>Limit or risk</th><th>Consequence</th><th>Mitigation now</th><th>Would need</th></tr></thead>
+      <tbody>
+        <tr><td class="k">HTTP on the demo host</td><td>Sign-in credentials cross the network in clear text</td><td>Fine for assessment; databases bound to loopback</td><td>A domain, a reverse proxy and a Let&rsquo;s Encrypt certificate</td></tr>
+        <tr><td class="k">Shared, small host</td><td>QVS runs beside third-party production on 3.8 GB</td><td>Hard memory caps, a swap cushion, loopback-only databases</td><td>A dedicated instance, or a resized one</td></tr>
+        <tr><td class="k">Single-writer chain</td><td>A DB superuser can rewrite the whole tail and re-chain it</td><td>Append-only trigger; least-privilege app role</td><td>Anchoring the head hash to an external witness</td></tr>
+        <tr><td class="k">Garbage in</td><td>A registrar can sign a false award, and it will verify</td><td>The ledger attributes it to an actor and a timestamp</td><td>Dual control on issuance; reconciliation with student records</td></tr>
+        <tr><td class="k">Cohort import speed</td><td>1000 rows take ~51 s, past the 30 s target</td><td>Correct and per-row reported; measured, not hidden</td><td>Batched or parallel signing</td></tr>
+        <tr><td class="k">ID check letter</td><td>A mistyped-but-well-shaped national ID is accepted</td><td>Shape validated; never echoed in logs or errors</td><td>An agreed, correct check-letter algorithm</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="decision">
+    <p class="d-h">The sentence to end on</p>
+    <p>This system does not decide whether a qualification is real. It makes every assertion about one attributable to a key, a person and a moment in time &mdash; and makes any later edit to that record evident. That is a smaller claim than &ldquo;verification&rdquo; usually implies, and it is one the running system demonstrated, end to end, on demand.</p>
+  </div>
+</section>
+
+<footer class="end">
+  <p class="sig">End of as-built report &mdash; MIM736 practical assignment</p>
+  <p>Twelve functional requirements delivered, twenty-three of twenty-six traced with none uncovered, and a system deployed and verified against its own public door. Where the build departed from the plan, &sect;08 says so; where it still falls short, &sect;12 says that too.</p>
+</footer>
+
+</main>
+</div>
+</div>
+
+<script>
+(function () {
+  var links = Array.prototype.slice.call(document.querySelectorAll('nav.rail a'));
+  if (!links.length || !('IntersectionObserver' in window)) return;
+  var byId = {};
+  links.forEach(function (a) { byId[a.getAttribute('href').slice(1)] = a; });
+  var seen = {};
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) { seen[e.target.id] = e.isIntersecting ? e.intersectionRatio : 0; });
+    var best = null, bestRatio = 0;
+    Object.keys(seen).forEach(function (id) {
+      if (seen[id] > bestRatio) { bestRatio = seen[id]; best = id; }
+    });
+    links.forEach(function (a) { a.removeAttribute('aria-current'); });
+    if (best && byId[best]) byId[best].setAttribute('aria-current', 'true');
+  }, { threshold: [0, 0.15, 0.4, 0.75], rootMargin: '-10% 0px -60% 0px' });
+  document.querySelectorAll('main.col section').forEach(function (s) { io.observe(s); });
+})();
+</script>
