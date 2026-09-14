@@ -221,7 +221,7 @@ export class SearchCredentialsComponent {
 
   /** Everything that would change the request, as one comparable string. */
   private criteriaKey(): string {
-    return [
+    return JSON.stringify([
       this.mode,
       this.holderName.trim(),
       this.nqfLevel ?? '',
@@ -229,6 +229,6 @@ export class SearchCredentialsComponent {
       this.awardedFrom,
       this.awardedTo,
       this.holderNationalId.trim()
-    ].join('\u0000');
+    ]);
   }
 }
